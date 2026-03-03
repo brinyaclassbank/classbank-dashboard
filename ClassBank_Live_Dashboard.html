@@ -1,0 +1,2917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassBank Product Tracker Dashboard v4</title>
+    <style>
+        :root {
+            --primary-blue: #4E74FF;
+            --yellow: #FDE440;
+            --orange: #F9AB12;
+            --dark-text: #1a1a3e;
+            --white: #FFFFFF;
+            --light-bg: #f0f3ff;
+            --header-bg: #4856d6;
+            --table-header-bg: #e8ecff;
+            --table-row-light: #ffffff;
+            --table-row-alt: #f8f9ff;
+            --bg: #f5f7fa;
+            --green: #10b981;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --indigo: #4f46e5;
+            --gray: #9ca3af;
+            --light-gray: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        /* HEADER STYLES */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #5a7eff 100%);
+            color: var(--white);
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 64px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .logo-container svg {
+            width: 32px;
+            height: auto;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* NAV TABS - Pill style */
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            flex-grow: 1;
+            margin: 0 40px;
+            background-color: rgba(75, 85, 214, 0.3);
+            padding: 6px;
+            border-radius: 28px;
+            width: fit-content;
+        }
+
+        .nav-tabs button {
+            background-color: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .nav-tabs button:hover {
+            color: var(--white);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-tabs button.active {
+            background-color: var(--white);
+            color: var(--primary-blue);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+        }
+
+        .demo-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .setup-btn {
+            background-color: var(--yellow);
+            color: var(--dark-text);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .setup-btn:hover {
+            background-color: #fcd34d;
+            transform: translateY(-2px);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            background-color: var(--white);
+            padding: 24px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        /* PAGE CONTENT */
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* CARDS */
+        .card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--orange);
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .card.blue-border {
+            border-left-color: var(--primary-blue);
+        }
+
+        .card.green-border {
+            border-left-color: var(--green);
+        }
+
+        .card.purple-border {
+            border-left-color: var(--purple);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--dark-text);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--dark-text);
+        }
+
+        /* METRICS */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background-color: var(--light-bg);
+            padding: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .metric-card:hover {
+            background-color: #e8ecff;
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .metric-change {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .metric-change.positive {
+            color: var(--green);
+        }
+
+        .metric-change.negative {
+            color: var(--red);
+        }
+
+        /* SUMMARY CARDS */
+        .summary-cards-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border-top: 3px solid var(--primary-blue);
+        }
+
+        .summary-card.green-border {
+            border-top-color: var(--green);
+        }
+
+        .summary-card h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .summary-item-clickable {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .summary-item-clickable:hover {
+            background-color: var(--light-bg);
+        }
+
+        /* SEARCH & FILTER */
+        .search-filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #3e5bcc;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+        }
+
+        .btn-secondary:hover,
+        .btn-secondary.active {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--primary-blue);
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            color: var(--dark-text);
+        }
+
+        /* PILLS */
+        .pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .pill-bug {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .pill-dev {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-enh {
+            background-color: #e9d5ff;
+            color: var(--purple);
+        }
+
+        .pill-feat {
+            background-color: #fef3c7;
+            color: var(--orange);
+        }
+
+        /* PRIORITY PILLS */
+        .pill-high {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .pill-medium {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .pill-low {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-p1 {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .pill-p2 {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .pill-p3 {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        /* STATUS PILLS */
+        .pill-review {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .pill-momentum {
+            background-color: #e0e7ff;
+            color: var(--indigo);
+        }
+
+        .pill-progress {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-resolved,
+        .pill-deployed {
+            background-color: #d1fae5;
+            color: var(--green);
+        }
+
+        .pill-blocked {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .pill-not-started {
+            background-color: #f3f4f6;
+            color: var(--gray);
+        }
+
+        /* CATEGORY PILLS */
+        .pill-ux-ui {
+            background-color: #e9d5ff;
+            color: var(--purple);
+        }
+
+        .pill-financial-literacy {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-customization {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .pill-integrations {
+            background-color: #d1fae5;
+            color: var(--green);
+        }
+
+        .pill-performance {
+            background-color: #fee2e2;
+            color: var(--red);
+        }
+
+        .pill-student-experience {
+            background-color: #fce7f3;
+            color: #be185d;
+        }
+
+        .pill-teacher-experience {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-admin-school {
+            background-color: #e0e7ff;
+            color: var(--indigo);
+        }
+
+        .pill-other,
+        .pill-bug-type {
+            background-color: #f3f4f6;
+            color: var(--gray);
+        }
+
+        /* TABLES */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--light-gray);
+            background-color: var(--white);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white);
+        }
+
+        thead {
+            background-color: var(--table-header-bg);
+            position: sticky;
+            top: 64px;
+            z-index: 10;
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 800;
+            font-size: 13px;
+            color: #FFFFFF;
+            background-color: #4E74FF;
+            border-bottom: 2px solid #3e5bcc;
+            white-space: nowrap;
+            user-select: none;
+            letter-spacing: 0.3px;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        th.sortable:hover {
+            background-color: #5a7eff;
+        }
+
+        th.sortable::after {
+            content: '';
+            display: inline-block;
+            margin-left: 6px;
+            width: 10px;
+            height: 10px;
+            opacity: 0.3;
+        }
+
+        th.sortable.sort-asc::after {
+            content: '▲';
+            opacity: 1;
+        }
+
+        th.sortable.sort-desc::after {
+            content: '▼';
+            opacity: 1;
+        }
+
+        tbody tr {
+            background-color: var(--table-row-light);
+            border-bottom: 1px solid var(--light-gray);
+            transition: background-color 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--table-row-alt);
+        }
+
+        tbody tr:hover {
+            background-color: #f0f3ff;
+        }
+
+        td {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--dark-text);
+        }
+
+        td.editable {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        td.editable:hover {
+            background-color: #fff9e6;
+            outline: 1px solid #FDE440;
+        }
+
+        td.editable.selected {
+            outline: 2px solid #4E74FF;
+            background-color: #f0f3ff;
+        }
+
+        td.editable:hover::after {
+            content: '✎';
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: #9ca3af;
+            opacity: 0.6;
+        }
+
+        .edit-input,
+        .edit-select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 2px solid var(--primary-blue);
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .edit-input:focus,
+        .edit-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 2px rgba(78, 116, 255, 0.2);
+        }
+
+        /* MINI TABLE */
+        .mini-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .mini-table thead {
+            background-color: var(--table-header-bg);
+            position: static;
+            top: auto;
+        }
+
+        .mini-table th {
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #FFFFFF;
+            background-color: #4E74FF;
+            border-bottom: 2px solid #3e5bcc;
+        }
+
+        .mini-table td {
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+
+        .mini-table tbody tr:nth-child(even) {
+            background-color: var(--table-row-alt);
+        }
+
+        .mini-table tbody tr:hover {
+            background-color: #f0f3ff;
+        }
+
+        /* MODALS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 1px solid var(--light-gray);
+            position: sticky;
+            top: 0;
+            background-color: var(--white);
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--dark-text);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-section {
+            margin-bottom: 20px;
+        }
+
+        .modal-section h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .modal-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-value {
+            font-size: 13px;
+            color: var(--dark-text);
+            font-weight: 500;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 24px;
+            border-top: 1px solid var(--light-gray);
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-primary {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .modal-btn-primary:hover {
+            background-color: #3e5bcc;
+        }
+
+        .modal-btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--primary-blue);
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: #dfe4f7;
+        }
+
+        /* TOAST NOTIFICATIONS */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background-color: var(--white);
+            color: var(--dark-text);
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--green);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--red);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* KANBAN BOARD */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .kanban-column {
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            padding: 16px;
+            min-height: 400px;
+        }
+
+        .kanban-header {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-count {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .kanban-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 100px;
+            padding: 4px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .kanban-card {
+            background-color: var(--white);
+            border-radius: 6px;
+            padding: 12px;
+            cursor: move;
+            transition: all 0.2s ease;
+            border-left: 3px solid var(--primary-blue);
+        }
+
+        .kanban-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .kanban-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 8px;
+        }
+
+        .kanban-card-meta {
+            font-size: 11px;
+            color: var(--gray);
+        }
+
+        /* RELATED ITEMS PILLS */
+        .related-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--light-gray); }
+        .related-section h4 { font-size: 12px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .related-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .related-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .related-pill:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        .related-pill-bug { background: #fee2e2; color: #ef4444; }
+        .related-pill-dev { background: #dbeafe; color: #4E74FF; }
+        .related-pill-enh { background: #e9d5ff; color: #8b5cf6; }
+        .related-pill-feat { background: #fef3c7; color: #F9AB12; }
+        .kanban-card.drag-over { border: 2px dashed var(--primary-blue); background-color: #f0f3ff; }
+
+        /* UTILITY */
+        .text-muted {
+            color: var(--gray);
+        }
+
+        .text-small {
+            font-size: 12px;
+        }
+
+        .margin-bottom {
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .flex-center {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gap-small {
+            gap: 8px;
+        }
+
+        .gap-medium {
+            gap: 12px;
+        }
+
+        .gap-large {
+            gap: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .nav-tabs {
+                margin: 0 20px;
+            }
+
+            .page-content {
+                padding: 16px;
+            }
+
+            .metrics-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header-content {
+                height: auto;
+                flex-direction: column;
+                gap: 12px;
+                padding: 12px 0;
+            }
+
+            .nav-tabs {
+                margin: 0;
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .header-right {
+                order: 2;
+            }
+
+            .metrics-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                font-size: 12px;
+            }
+
+            td, th {
+                padding: 8px 12px;
+            }
+
+            .toast-container {
+                bottom: 12px;
+                right: 12px;
+                max-width: calc(100vw - 24px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+            <div class="logo-container">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FDE440;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#F9AB12;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="15" y="15" width="70" height="70" rx="8" fill="url(#logoGrad)"/>
+                    <text x="50" y="62" font-size="50" font-weight="700" text-anchor="middle" fill="#1a1a3e">C</text>
+                </svg>
+                <span class="logo-text">ClassBank</span>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="nav-btn active" data-tab="overview">Overview</button>
+                <button class="nav-btn" data-tab="bugs">Bugs</button>
+                <button class="nav-btn" data-tab="dev">Dev Queue</button>
+                <button class="nav-btn" data-tab="enhancements">Enhancements</button>
+                <button class="nav-btn" data-tab="roadmap">Roadmap</button>
+            </div>
+
+            <div class="header-right">
+                <div class="demo-badge">DEMO MODE</div>
+                <span id="syncIndicator" style="font-size: 11px; opacity: 0.7; margin-right: 8px; display: none;"></span>
+                <button class="setup-btn" id="setupBtn">Setup</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h1 id="pageTitle">Overview</h1>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+        <!-- OVERVIEW TAB -->
+        <div class="tab-content active" id="overview-tab">
+            <!-- Metric Cards -->
+            <div class="metrics-row">
+                <div class="metric-card" onclick="switchTab('bugs')">
+                    <div class="metric-label">Total Bugs</div>
+                    <div class="metric-value" id="totalBugs">12</div>
+                    <div class="metric-change positive">View all →</div>
+                </div>
+                <div class="metric-card" onclick="switchTab('dev')">
+                    <div class="metric-label">In Development</div>
+                    <div class="metric-value" id="inDevelopment">10</div>
+                    <div class="metric-change positive">View all →</div>
+                </div>
+                <div class="metric-card" onclick="switchTab('enhancements')">
+                    <div class="metric-label">Enhancement Requests</div>
+                    <div class="metric-value" id="totalEnhancements">10</div>
+                    <div class="metric-change positive">View all →</div>
+                </div>
+                <div class="metric-card" onclick="switchTab('bugs')">
+                    <div class="metric-label">Resolved Issues</div>
+                    <div class="metric-value" id="resolvedBugs">3</div>
+                    <div class="metric-change positive">View all →</div>
+                </div>
+            </div>
+
+            <!-- Bug Sneak Peek -->
+            <div class="card blue-border">
+                <h2>🐛 Bug Sneak Peek - High Priority</h2>
+                <div class="table-container">
+                    <table class="mini-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>Opened</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bugSneakPeekBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Top Enhancement Requests -->
+            <div class="card purple-border">
+                <h2>⭐ Top Enhancement Requests</h2>
+                <div class="table-container">
+                    <table class="mini-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Category</th>
+                                <th>Requested</th>
+                                <th>Upvotes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="enhancementSneakPeekBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUGS TAB -->
+        <div class="tab-content" id="bugs-tab">
+            <div class="search-filter-row">
+                <div class="search-bar">
+                    <input type="text" id="bugSearch" placeholder="Search bugs...">
+                </div>
+                <div class="button-group" id="bugFilters">
+                    <button class="btn btn-secondary active" data-filter="all">All</button>
+                    <button class="btn btn-secondary" data-filter="high">High</button>
+                    <button class="btn btn-secondary" data-filter="medium">Medium</button>
+                    <button class="btn btn-secondary" data-filter="low">Low</button>
+                    <button class="btn btn-secondary" data-filter="resolved">Resolved</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="addBugBtn">+ Add Bug</button>
+
+            <div class="table-container" style="margin-top: 20px;">
+                <table id="bugsTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="title">Title</th>
+                            <th class="sortable" data-sort="type">Type</th>
+                            <th class="sortable" data-sort="priority">Priority</th>
+                            <th class="sortable" data-sort="status">Status</th>
+                            <th class="sortable" data-sort="dateOpened">Date Opened</th>
+                            <th>Slack Thread</th>
+                            <th>Related</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bugsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DEV QUEUE TAB -->
+        <div class="tab-content" id="dev-tab">
+            <!-- Summary Cards -->
+            <div class="summary-cards-row">
+                <div class="summary-card">
+                    <h3>Dev Status</h3>
+                    <div id="devStatusSummary">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="summary-card green-border">
+                    <h3>Dev Hours (P1 Items)</h3>
+                    <div id="devHoursSummary">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-filter-row">
+                <div class="search-bar">
+                    <input type="text" id="devSearch" placeholder="Search dev items...">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="addDevBtn">+ Add Dev Item</button>
+
+            <div class="table-container" style="margin-top: 20px;">
+                <table id="devTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="item">Item</th>
+                            <th class="sortable" data-sort="priority">Priority</th>
+                            <th class="sortable" data-sort="status">Status</th>
+                            <th class="sortable" data-sort="backendHrs">Backend Hrs</th>
+                            <th class="sortable" data-sort="frontendHrs">Frontend Hrs</th>
+                            <th>Slack Thread</th>
+                            <th>Related</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="devTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ENHANCEMENTS TAB -->
+        <div class="tab-content" id="enhancements-tab">
+            <div class="search-filter-row">
+                <div class="search-bar">
+                    <input type="text" id="enhSearch" placeholder="Search enhancements...">
+                </div>
+                <div class="button-group" id="enhFilters">
+                    <button class="btn btn-secondary active" data-filter="all">All</button>
+                    <button class="btn btn-secondary" data-filter="ux-ui">UX/UI</button>
+                    <button class="btn btn-secondary" data-filter="financial-literacy">Financial Literacy</button>
+                    <button class="btn btn-secondary" data-filter="customization">Customization</button>
+                    <button class="btn btn-secondary" data-filter="student-experience">Student Exp</button>
+                    <button class="btn btn-secondary" data-filter="teacher-experience">Teacher Exp</button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="addEnhBtn">+ Add Enhancement</button>
+
+            <div class="table-container" style="margin-top: 20px;">
+                <table id="enhancementsTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="feature">Feature</th>
+                            <th class="sortable" data-sort="category">Category</th>
+                            <th class="sortable" data-sort="timesRequested">Times Requested</th>
+                            <th class="sortable" data-sort="roadmapPhase">Roadmap Phase</th>
+                            <th>Sample Details</th>
+                            <th class="sortable" data-sort="upvotes">Upvotes</th>
+                            <th>Related</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="enhancementsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROADMAP TAB -->
+        <div class="tab-content" id="roadmap-tab">
+            <button class="btn btn-primary" id="addRoadmapBtn">+ Add Feature</button>
+
+            <div class="kanban-board" id="roadmapKanban">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SETUP MODAL -->
+    <div class="modal" id="setupModal">
+        <div class="modal-content" style="max-width: 560px;">
+            <div class="modal-header">
+                <h2>Google Sheets Connection</h2>
+                <button class="modal-close" onclick="closeModal('setupModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section">
+                    <h3>How to Connect</h3>
+                    <ol style="font-size: 13px; color: var(--gray); margin: 8px 0 16px 18px; line-height: 1.8;">
+                        <li>Upload the <strong>ClassBank_Database_Template.xlsx</strong> to Google Sheets</li>
+                        <li>Go to <strong>File → Share → Publish to web</strong></li>
+                        <li>Select <strong>"Entire Document"</strong> and format <strong>"Comma-separated values (.csv)"</strong></li>
+                        <li>Click <strong>Publish</strong> and paste the link below</li>
+                    </ol>
+                </div>
+                <div class="modal-section">
+                    <h3>Published Sheet URL</h3>
+                    <input type="text" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv" style="width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: 13px; margin-top: 6px;">
+                    <div id="connectionStatus" style="font-size: 12px; margin-top: 8px; color: var(--gray);">Not connected</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('setupModal')">Cancel</button>
+                <button class="modal-btn modal-btn-secondary" onclick="testSheetConnection()">Test Connection</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveAndSync()">Save &amp; Sync</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BUG DETAIL MODAL -->
+    <div class="modal" id="bugDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="bugDetailTitle">Bug Details</h2>
+                <button class="modal-close" onclick="closeModal('bugDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" id="bugTitle" class="edit-input" placeholder="Bug title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select id="bugType" class="edit-select">
+                            <option value="bug">Bug</option>
+                            <option value="performance">Performance</option>
+                            <option value="enhancement">Enhancement</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select id="bugPriority" class="edit-select">
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="bugStatus" class="edit-select">
+                            <option value="review">Review</option>
+                            <option value="momentum">Momentum</option>
+                            <option value="progress">Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Date Opened</label>
+                        <input type="date" id="bugDateOpened" class="edit-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date Resolved</label>
+                        <input type="date" id="bugDateResolved" class="edit-input">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Slack Thread Link</label>
+                        <input type="text" id="bugSlackLink" class="edit-input" placeholder="https://...slack.com/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="bugDescription" class="edit-input" placeholder="Describe the bug..." style="min-height: 100px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="related-section">
+                    <h4>Related Items</h4>
+                    <div id="bugRelatedItems"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('bugDetailModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveBug()">Save Bug</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEV DETAIL MODAL -->
+    <div class="modal" id="devDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="devDetailTitle">Dev Item Details</h2>
+                <button class="modal-close" onclick="closeModal('devDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-row">
+                    <div class="form-group full">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" id="devItem" class="edit-input" placeholder="Item name">
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select id="devPriority" class="edit-select">
+                            <option value="p1">P1</option>
+                            <option value="p2">P2</option>
+                            <option value="p3">P3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="devStatus" class="edit-select">
+                            <option value="not-started">Not Started</option>
+                            <option value="progress">In Progress</option>
+                            <option value="review">In Review</option>
+                            <option value="blocked">Blocked</option>
+                            <option value="deployed">Deployed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Backend Hours</label>
+                        <input type="number" id="devBackendHrs" class="edit-input" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Frontend Hours</label>
+                        <input type="number" id="devFrontendHrs" class="edit-input" min="0">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Slack Thread Link</label>
+                        <input type="text" id="devSlackThread" class="edit-input" placeholder="https://...slack.com/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="devDescription" class="edit-input" placeholder="Describe the item..." style="min-height: 100px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="related-section">
+                    <h4>Related Items</h4>
+                    <div id="devRelatedItems"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('devDetailModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveDevItem()">Save Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ENHANCEMENT DETAIL MODAL -->
+    <div class="modal" id="enhDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="enhDetailTitle">Enhancement Details</h2>
+                <button class="modal-close" onclick="closeModal('enhDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-row">
+                    <div class="form-group full">
+                        <label class="form-label">Feature Name</label>
+                        <input type="text" id="enhFeature" class="edit-input" placeholder="Feature name">
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="enhCategory" class="edit-select">
+                            <option value="ux-ui">UX/UI</option>
+                            <option value="financial-literacy">Financial Literacy</option>
+                            <option value="customization">Customization</option>
+                            <option value="student-experience">Student Experience</option>
+                            <option value="teacher-experience">Teacher Experience</option>
+                            <option value="admin-school">Admin/School</option>
+                            <option value="integrations">Integrations</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Times Requested</label>
+                        <input type="number" id="enhTimesRequested" class="edit-input" min="0">
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="form-group">
+                        <label class="form-label">Upvotes</label>
+                        <input type="number" id="enhUpvotes" class="edit-input" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roadmap Phase</label>
+                        <input type="text" id="enhRoadmapPhase" class="edit-input" placeholder="e.g., Q2 2026">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Sample Details</label>
+                        <textarea id="enhSampleDetails" class="edit-input" placeholder="Sample details..." style="min-height: 100px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="related-section">
+                    <h4>Related Items</h4>
+                    <div id="enhRelatedItems"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal('enhDetailModal')">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="saveEnhancement()">Save Enhancement</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ============ DATA STRUCTURE ============
+        let data = {
+            bugs: [],
+            devQueue: [],
+            enhancements: [],
+            roadmap: [],
+            sheetUrl: ''
+        };
+
+        let currentEditingId = null;
+        let currentEditingType = null;
+
+        // ============ DEMO DATA ============
+        function initializeDemoData() {
+            data.bugs = [
+                { id: 'BUG-001', title: 'Savings interest calculated incorrectly', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2025-11-15', dateResolved: '', slackThread: '', description: 'Interest calculation uses wrong timezone offset', relatedBugs: ['BUG-005'], relatedDev: ['DEV-003'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-002', title: 'Store page slow load (10s+)', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-01', dateResolved: '', slackThread: '', description: 'Store page takes 10+ seconds to load with many items', relatedBugs: ['BUG-006'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-003', title: 'Password reset email not sending', type: 'bug', priority: 'high', status: 'resolved', dateOpened: '2025-10-20', dateResolved: '2025-11-05', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-004', title: 'Report PDF generation fails for large classes', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-10', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: ['DEV-001'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
+                { id: 'BUG-005', title: 'Student balance shows negative after batch', type: 'bug', priority: 'medium', status: 'progress', dateOpened: '2026-01-15', dateResolved: '', slackThread: '', description: '', relatedBugs: ['BUG-001'], relatedDev: ['DEV-005'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-006', title: 'Teacher dashboard timeout on 500+ students', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-20', dateResolved: '', slackThread: '', description: '', relatedBugs: ['BUG-002'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-007', title: 'Mobile layout broken on student store', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-25', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-001'], relatedRoadmap: ['FEAT-001'] },
+                { id: 'BUG-008', title: 'Duplicate transactions on quick double-click', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2026-02-01', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: ['DEV-009'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-009', title: 'CSV export missing last column', type: 'bug', priority: 'low', status: 'review', dateOpened: '2026-02-05', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-010', title: 'Notification bell count incorrect', type: 'bug', priority: 'low', status: 'resolved', dateOpened: '2025-09-15', dateResolved: '2025-10-01', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-011', title: 'Search not returning partial matches', type: 'enhancement', priority: 'medium', status: 'review', dateOpened: '2026-02-10', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-007'], relatedRoadmap: [] },
+                { id: 'BUG-012', title: 'Auto-save drafts not persisting', type: 'bug', priority: 'medium', status: 'momentum', dateOpened: '2026-02-15', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] }
+            ];
+
+            data.devQueue = [
+                { id: 'DEV-001', item: 'Report generation system (AWS S3)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 8, slackThread: '', description: 'Build comprehensive report generation using AWS S3 storage', relatedBugs: ['BUG-004'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
+                { id: 'DEV-002', item: 'Teacher matching from RosterStream', priority: 'p1', status: 'progress', backendHrs: 24, frontendHrs: 0, slackThread: '', description: 'Implement teacher matching from RosterStream API', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-003', item: 'Fix savings interest timezone bug', priority: 'p1', status: 'not-started', backendHrs: 4, frontendHrs: 0, slackThread: '', description: 'Fix timezone calculation issue in interest payment system', relatedBugs: ['BUG-001'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-004', item: 'Query optimization (10s+ load times)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 0, slackThread: '', description: 'Optimize database queries causing slow page loads', relatedBugs: ['BUG-002', 'BUG-006'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-005', item: 'Force refresh balance after batch action', priority: 'p1', status: 'progress', backendHrs: 8, frontendHrs: 8, slackThread: '', description: 'Implement real-time balance refresh after bulk actions', relatedBugs: ['BUG-005'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-006', item: 'Admin Panel for Schools', priority: 'p2', status: 'not-started', backendHrs: 24, frontendHrs: 24, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-008'], relatedRoadmap: ['FEAT-002'] },
+                { id: 'DEV-007', item: 'Student portfolio & badges', priority: 'p2', status: 'blocked', backendHrs: 16, frontendHrs: 16, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-010'], relatedRoadmap: ['FEAT-008'] },
+                { id: 'DEV-008', item: 'RosterStream integration complete', priority: 'p1', status: 'deployed', backendHrs: 16, frontendHrs: 8, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-009', item: 'Bulk action confirmation dialog', priority: 'p1', status: 'review', backendHrs: 4, frontendHrs: 8, slackThread: '', description: '', relatedBugs: ['BUG-008'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-010', item: 'Performance monitoring dashboard', priority: 'p3', status: 'not-started', backendHrs: 8, frontendHrs: 16, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] }
+            ];
+
+            data.enhancements = [
+                { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', timesRequested: 20, upvotes: 12, roadmapPhase: 'Q2 2026', sampleDetails: 'Mobile app for iOS and Android platforms', relatedBugs: ['BUG-007'], relatedDev: [], relatedRoadmap: ['FEAT-001'] },
+                { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', timesRequested: 13, upvotes: 8, roadmapPhase: 'Future', sampleDetails: 'Create student groups for bulk operations', relatedBugs: [], relatedDev: [], relatedRoadmap: ['FEAT-005'] },
+                { id: 'ENH-003', feature: 'Print usernames', category: 'teacher-experience', timesRequested: 8, upvotes: 3, roadmapPhase: '', sampleDetails: 'Ability to print student username list', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-004', feature: 'Math off for store', category: 'customization', timesRequested: 6, upvotes: 5, roadmapPhase: '', sampleDetails: 'Option to disable math/calculations in store', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-005', feature: 'Teacher Shops for Student', category: 'ux-ui', timesRequested: 6, upvotes: 4, roadmapPhase: '', sampleDetails: 'Allow teachers to make purchases on behalf of students', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-006', feature: 'Debit Cards', category: 'financial-literacy', timesRequested: 5, upvotes: 2, roadmapPhase: '', sampleDetails: 'Prepaid debit cards for student transactions', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-007', feature: 'Custom Store Themes', category: 'customization', timesRequested: 4, upvotes: 3, roadmapPhase: '', sampleDetails: 'Customizable themes for school stores', relatedBugs: ['BUG-011'], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-008', feature: 'Parent Portal Access', category: 'admin-school', timesRequested: 7, upvotes: 6, roadmapPhase: 'Q3 2026', sampleDetails: 'Parent accounts to view student activity', relatedBugs: [], relatedDev: ['DEV-006'], relatedRoadmap: ['FEAT-003'] },
+                { id: 'ENH-009', feature: 'Automated Savings Goals', category: 'financial-literacy', timesRequested: 3, upvotes: 2, roadmapPhase: '', sampleDetails: 'Students set and track savings goals', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-010', feature: 'Classroom Leaderboard', category: 'student-experience', timesRequested: 9, upvotes: 7, roadmapPhase: 'Backlog', sampleDetails: 'Gamified leaderboard for classroom engagement', relatedBugs: [], relatedDev: ['DEV-007'], relatedRoadmap: ['FEAT-008'] }
+            ];
+
+            data.roadmap = [
+                { id: 'FEAT-001', feature: 'Mobile App MVP', status: 'progress', phase: 'Q2 2026', relatedEnhancements: ['ENH-001'], relatedDev: [], relatedBugs: ['BUG-007'] },
+                { id: 'FEAT-002', feature: 'Admin Dashboard Overhaul', status: 'on-deck', phase: 'Q2 2026', relatedEnhancements: [], relatedDev: ['DEV-006'], relatedBugs: [] },
+                { id: 'FEAT-003', feature: 'Parent Portal', status: 'upcoming', phase: 'Q3 2026', relatedEnhancements: ['ENH-008'], relatedDev: [], relatedBugs: [] },
+                { id: 'FEAT-004', feature: 'Advanced Reporting', status: 'upcoming', phase: 'Q3 2026', relatedEnhancements: [], relatedDev: ['DEV-001'], relatedBugs: ['BUG-004'] },
+                { id: 'FEAT-005', feature: 'Group Management', status: 'ideas', phase: 'Future', relatedEnhancements: ['ENH-002'], relatedDev: [], relatedBugs: [] },
+                { id: 'FEAT-006', feature: 'Marketplace Integration', status: 'ideas', phase: 'Future', relatedEnhancements: [], relatedDev: [], relatedBugs: [] },
+                { id: 'FEAT-007', feature: 'AI-Powered Insights', status: 'ideas', phase: 'Future', relatedEnhancements: [], relatedDev: [], relatedBugs: [] },
+                { id: 'FEAT-008', feature: 'Gamification System', status: 'backlog', phase: 'Backlog', relatedEnhancements: ['ENH-010'], relatedDev: ['DEV-007'], relatedBugs: [] }
+            ];
+
+            saveData();
+            renderAllTables();
+        }
+
+        // ============ STORAGE ============
+        function saveData() {
+            localStorage.setItem('classbank_data', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('classbank_data');
+            if (saved) {
+                data = JSON.parse(saved);
+            } else {
+                initializeDemoData();
+            }
+        }
+
+        // ============ RENDER FUNCTIONS ============
+        function renderBugTable(filter = 'all', searchTerm = '') {
+            const tbody = document.getElementById('bugsTableBody');
+            tbody.innerHTML = '';
+
+            let bugs = data.bugs;
+
+            // Filter by priority/status
+            if (filter !== 'all') {
+                if (['high', 'medium', 'low'].includes(filter)) {
+                    bugs = bugs.filter(b => b.priority === filter);
+                } else if (filter === 'resolved') {
+                    bugs = bugs.filter(b => b.status === 'resolved');
+                }
+            }
+
+            // Filter by search
+            if (searchTerm) {
+                bugs = bugs.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+
+            if (bugs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No bugs found</td></tr>';
+                return;
+            }
+
+            bugs.forEach(bug => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="editable" data-id="${bug.id}" data-field="title">${bug.title}</td>
+                    <td class="editable" data-id="${bug.id}" data-field="type"><span class="pill pill-${bug.type}">${bug.type}</span></td>
+                    <td class="editable" data-id="${bug.id}" data-field="priority"><span class="pill pill-${bug.priority}">${bug.priority}</span></td>
+                    <td class="editable" data-id="${bug.id}" data-field="status"><span class="pill pill-${bug.status}">${bug.status}</span></td>
+                    <td class="editable" data-id="${bug.id}" data-field="dateOpened">${bug.dateOpened}</td>
+                    <td><a href="${bug.slackThread}" target="_blank" style="color: var(--primary-blue); text-decoration: none;">${bug.slackThread ? '🔗' : '-'}</a></td>
+                    <td style="font-size: 11px;">${renderRelatedPills(bug)}</td>
+                    <td>
+                        <button class="btn-icon" onclick="editBug('${bug.id}')">✎</button>
+                        <button class="btn-icon" onclick="deleteBug('${bug.id}')" style="color: var(--red);">🗑</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            attachEditableListeners();
+        }
+
+        function renderDevTable(searchTerm = '') {
+            const tbody = document.getElementById('devTableBody');
+            tbody.innerHTML = '';
+
+            let items = data.devQueue;
+
+            if (searchTerm) {
+                items = items.filter(d => d.item.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No dev items found</td></tr>';
+                return;
+            }
+
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="editable" data-id="${item.id}" data-field="item">${item.item}</td>
+                    <td class="editable" data-id="${item.id}" data-field="priority"><span class="pill pill-${item.priority}">${item.priority}</span></td>
+                    <td class="editable" data-id="${item.id}" data-field="status"><span class="pill pill-${item.status}">${item.status}</span></td>
+                    <td class="editable" data-id="${item.id}" data-field="backendHrs">${item.backendHrs}</td>
+                    <td class="editable" data-id="${item.id}" data-field="frontendHrs">${item.frontendHrs}</td>
+                    <td><a href="${item.slackThread}" target="_blank" style="color: var(--primary-blue); text-decoration: none;">${item.slackThread ? '🔗' : '-'}</a></td>
+                    <td style="font-size: 11px;">${renderRelatedPills(item)}</td>
+                    <td>
+                        <button class="btn-icon" onclick="editDevItem('${item.id}')">✎</button>
+                        <button class="btn-icon" onclick="deleteDevItem('${item.id}')" style="color: var(--red);">🗑</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            attachEditableListeners();
+            updateDevSummary();
+        }
+
+        function renderEnhancementsTable(filter = 'all', searchTerm = '') {
+            const tbody = document.getElementById('enhancementsTableBody');
+            tbody.innerHTML = '';
+
+            let items = data.enhancements;
+
+            if (filter !== 'all') {
+                items = items.filter(e => e.category === filter);
+            }
+
+            if (searchTerm) {
+                items = items.filter(e => e.feature.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No enhancements found</td></tr>';
+                return;
+            }
+
+            items.forEach(enh => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="editable" data-id="${enh.id}" data-field="feature">${enh.feature}</td>
+                    <td class="editable" data-id="${enh.id}" data-field="category"><span class="pill pill-${enh.category}">${enh.category.replace('-', ' ')}</span></td>
+                    <td class="editable" data-id="${enh.id}" data-field="timesRequested">${enh.timesRequested}</td>
+                    <td class="editable" data-id="${enh.id}" data-field="roadmapPhase">${enh.roadmapPhase || '-'}</td>
+                    <td><button class="btn btn-small" onclick="showEnhDetails('${enh.id}')">View</button></td>
+                    <td style="text-align: center;">
+                        <button class="btn-icon" onclick="upvoteEnhancement('${enh.id}')" title="Upvote">👍</button>
+                        <span style="font-weight: 700; color: var(--dark-text);">${enh.upvotes}</span>
+                    </td>
+                    <td style="font-size: 11px;">${renderRelatedPills(enh)}</td>
+                    <td>
+                        <button class="btn-icon" onclick="editEnhancement('${enh.id}')">✎</button>
+                        <button class="btn-icon" onclick="deleteEnhancement('${enh.id}')" style="color: var(--red);">🗑</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            attachEditableListeners();
+        }
+
+        function renderRoadmapKanban() {
+            const kanban = document.getElementById('roadmapKanban');
+            kanban.innerHTML = '';
+
+            const phases = ['Backlog', 'Q2 2026', 'Q3 2026', 'Future'];
+
+            phases.forEach(phase => {
+                const items = data.roadmap.filter(r => r.phase === phase);
+                const column = document.createElement('div');
+                column.className = 'kanban-column';
+                column.setAttribute('data-phase', phase);
+
+                const header = document.createElement('div');
+                header.className = 'kanban-header';
+                header.innerHTML = `<span>${phase}</span><span class="kanban-count">${items.length}</span>`;
+                column.appendChild(header);
+
+                const cardsContainer = document.createElement('div');
+                cardsContainer.className = 'kanban-cards';
+                cardsContainer.setAttribute('data-phase', phase);
+
+                // Drop zone events
+                cardsContainer.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+                cardsContainer.addEventListener('dragleave', function(e) {
+                    this.classList.remove('drag-over');
+                });
+                cardsContainer.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    const featId = e.dataTransfer.getData('text/plain');
+                    const targetPhase = this.getAttribute('data-phase');
+                    const feat = data.roadmap.find(f => f.id === featId);
+                    if (feat) {
+                        feat.phase = targetPhase;
+                        saveData();
+                        renderRoadmapKanban();
+                        showToast(`Moved to ${targetPhase}`, 'success');
+                    }
+                });
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'kanban-card';
+                    card.draggable = true;
+                    card.setAttribute('data-id', item.id);
+                    card.style.borderLeftColor = 'var(--orange)';
+
+                    // Related enhancement pills
+                    let relatedHtml = '';
+                    if (item.relatedEnhancements && item.relatedEnhancements.length > 0) {
+                        relatedHtml = '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' +
+                            item.relatedEnhancements.map(eid => `<span class="related-pill related-pill-enh" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editEnhancement('${eid}')">${eid}</span>`).join('') +
+                            '</div>';
+                    }
+                    if (item.relatedDev && item.relatedDev.length > 0) {
+                        relatedHtml += '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">' +
+                            item.relatedDev.map(did => `<span class="related-pill related-pill-dev" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editDevItem('${did}')">${did}</span>`).join('') +
+                            '</div>';
+                    }
+                    if (item.relatedBugs && item.relatedBugs.length > 0) {
+                        relatedHtml += '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">' +
+                            item.relatedBugs.map(bid => `<span class="related-pill related-pill-bug" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editBug('${bid}')">${bid}</span>`).join('') +
+                            '</div>';
+                    }
+
+                    card.innerHTML = `
+                        <div class="kanban-card-title">${item.feature}</div>
+                        <div class="kanban-card-meta"><span class="pill pill-${item.status}">${item.status}</span></div>
+                        ${relatedHtml}
+                    `;
+
+                    // Click to open linked enhancement if exists
+                    card.addEventListener('click', function() {
+                        if (item.relatedEnhancements && item.relatedEnhancements.length > 0) {
+                            editEnhancement(item.relatedEnhancements[0]);
+                        } else {
+                            showToast(`${item.feature} - ${item.status} (${item.phase})`, 'info');
+                        }
+                    });
+
+                    // Drag events
+                    card.addEventListener('dragstart', function(e) {
+                        e.dataTransfer.setData('text/plain', item.id);
+                        this.style.opacity = '0.5';
+                    });
+                    card.addEventListener('dragend', function() {
+                        this.style.opacity = '1';
+                        document.querySelectorAll('.kanban-cards').forEach(c => c.classList.remove('drag-over'));
+                    });
+
+                    cardsContainer.appendChild(card);
+                });
+
+                column.appendChild(cardsContainer);
+                kanban.appendChild(column);
+            });
+        }
+
+        function renderOverviewMetrics() {
+            const totalBugs = data.bugs.length;
+            const inDev = data.devQueue.length;
+            const totalEnh = data.enhancements.length;
+            const resolved = data.bugs.filter(b => b.status === 'resolved').length;
+
+            document.getElementById('totalBugs').textContent = totalBugs;
+            document.getElementById('inDevelopment').textContent = inDev;
+            document.getElementById('totalEnhancements').textContent = totalEnh;
+            document.getElementById('resolvedBugs').textContent = resolved;
+
+            // Bug Sneak Peek
+            const topBugs = data.bugs.filter(b => b.priority === 'high').slice(0, 5);
+            const bugSneak = document.getElementById('bugSneakPeekBody');
+            bugSneak.innerHTML = topBugs.length === 0 ? '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--gray);">No high-priority bugs</td></tr>' : topBugs.map(b => `
+                <tr>
+                    <td>${b.title}</td>
+                    <td><span class="pill pill-${b.type}">${b.type}</span></td>
+                    <td><span class="pill pill-${b.priority}">${b.priority}</span></td>
+                    <td><span class="pill pill-${b.status}">${b.status}</span></td>
+                    <td>${b.dateOpened}</td>
+                </tr>
+            `).join('');
+
+            // Enhancement Sneak Peek
+            const topEnh = data.enhancements.sort((a, b) => b.timesRequested - a.timesRequested).slice(0, 5);
+            const enhSneak = document.getElementById('enhancementSneakPeekBody');
+            enhSneak.innerHTML = topEnh.length === 0 ? '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--gray);">No enhancements</td></tr>' : topEnh.map(e => `
+                <tr>
+                    <td>${e.feature}</td>
+                    <td><span class="pill pill-${e.category}">${e.category.replace('-', ' ')}</span></td>
+                    <td>${e.timesRequested}</td>
+                    <td style="text-align: center; font-weight: 700;">${e.upvotes}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateDevSummary() {
+            const devItems = data.devQueue;
+
+            // Dev Status
+            const statuses = {
+                'not-started': devItems.filter(d => d.status === 'not-started').length,
+                'progress': devItems.filter(d => d.status === 'progress').length,
+                'blocked': devItems.filter(d => d.status === 'blocked').length,
+                'deployed': devItems.filter(d => d.status === 'deployed').length
+            };
+
+            const statusHTML = `
+                <div class="summary-item summary-item-clickable" onclick="filterDevByStatus('not-started')">
+                    <span class="summary-label">Not Started</span>
+                    <span class="summary-value">${statuses['not-started']}</span>
+                </div>
+                <div class="summary-item summary-item-clickable" onclick="filterDevByStatus('progress')">
+                    <span class="summary-label">In Progress</span>
+                    <span class="summary-value">${statuses['progress']}</span>
+                </div>
+                <div class="summary-item summary-item-clickable" onclick="filterDevByStatus('blocked')">
+                    <span class="summary-label">Blocked</span>
+                    <span class="summary-value">${statuses['blocked']}</span>
+                </div>
+                <div class="summary-item summary-item-clickable" onclick="filterDevByStatus('deployed')">
+                    <span class="summary-label">Deployed</span>
+                    <span class="summary-value">${statuses['deployed']}</span>
+                </div>
+            `;
+            document.getElementById('devStatusSummary').innerHTML = statusHTML;
+
+            // Dev Hours
+            const p1Items = devItems.filter(d => d.priority === 'p1');
+            const statusMultipliers = {
+                'deployed': 1.0,
+                'review': 0.75,
+                'progress': 0.5,
+                'blocked': 0.25,
+                'not-started': 0
+            };
+
+            const projectedTotal = p1Items.reduce((sum, d) => sum + (d.backendHrs + d.frontendHrs), 0);
+            const usedTotal = p1Items.reduce((sum, d) => {
+                const mult = statusMultipliers[d.status] || 0;
+                return sum + ((d.backendHrs + d.frontendHrs) * mult);
+            }, 0);
+            const remainingTotal = projectedTotal - usedTotal;
+
+            const hoursHTML = `
+                <div class="summary-item">
+                    <span class="summary-label">P1 Projected</span>
+                    <span class="summary-value">${projectedTotal}h</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">P1 Used</span>
+                    <span class="summary-value">${Math.round(usedTotal)}h</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">P1 Remaining</span>
+                    <span class="summary-value">${Math.round(remainingTotal)}h</span>
+                </div>
+            `;
+            document.getElementById('devHoursSummary').innerHTML = hoursHTML;
+        }
+
+        function renderAllTables() {
+            renderBugTable();
+            renderDevTable();
+            renderEnhancementsTable();
+            renderRoadmapKanban();
+            renderOverviewMetrics();
+        }
+
+        // ============ INLINE EDITING ============
+        function attachEditableListeners() {
+            document.querySelectorAll('td.editable').forEach(cell => {
+                cell.setAttribute('tabindex', '0');
+                // Single click = select
+                cell.addEventListener('click', function(e) {
+                    document.querySelectorAll('td.editable.selected').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+                // Double click = edit
+                cell.addEventListener('dblclick', function() {
+                    const id = this.getAttribute('data-id');
+                    const field = this.getAttribute('data-field');
+                    startInlineEdit(id, field, this);
+                });
+                // Enter on selected = start edit
+                cell.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && this.classList.contains('selected') && !this.querySelector('input, select')) {
+                        e.preventDefault();
+                        startInlineEdit(this.getAttribute('data-id'), this.getAttribute('data-field'), this);
+                    }
+                });
+            });
+        }
+
+        function startInlineEdit(id, field, cell) {
+            let type, item;
+            if (id.startsWith('BUG')) { type = 'bug'; item = data.bugs.find(b => b.id === id); }
+            else if (id.startsWith('DEV')) { type = 'dev'; item = data.devQueue.find(d => d.id === id); }
+            else if (id.startsWith('ENH')) { type = 'enh'; item = data.enhancements.find(e => e.id === id); }
+            if (!item) return;
+
+            let input;
+            if (['type', 'priority', 'status', 'category'].includes(field)) {
+                input = document.createElement('select');
+                input.className = 'edit-select';
+                let options = [];
+                if (field === 'type') options = ['bug', 'performance', 'enhancement'];
+                else if (field === 'priority' && type === 'bug') options = ['high', 'medium', 'low'];
+                else if (field === 'priority' && type === 'dev') options = ['p1', 'p2', 'p3'];
+                else if (field === 'status' && type === 'bug') options = ['review', 'momentum', 'progress', 'resolved'];
+                else if (field === 'status' && type === 'dev') options = ['not-started', 'progress', 'review', 'blocked', 'deployed'];
+                else if (field === 'category') options = ['ux-ui', 'financial-literacy', 'customization', 'student-experience', 'teacher-experience', 'admin-school', 'integrations'];
+                options.forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value = opt; o.textContent = opt.replace(/-/g, ' ');
+                    if (opt === item[field]) o.selected = true;
+                    input.appendChild(o);
+                });
+            } else {
+                input = document.createElement('input');
+                input.className = 'edit-input';
+                input.type = ['backendHrs', 'frontendHrs', 'timesRequested', 'upvotes'].includes(field) ? 'number' : (field === 'dateOpened' || field === 'dateResolved') ? 'date' : 'text';
+                input.value = item[field] || '';
+            }
+
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+            if (input.tagName === 'INPUT' && input.type === 'text') input.select();
+
+            let saved = false;
+            function doSave() {
+                if (saved) return; saved = true;
+                const val = input.value;
+                item[field] = ['backendHrs','frontendHrs','timesRequested','upvotes'].includes(field) ? (parseInt(val)||0) : val;
+                saveData();
+                if (type === 'bug') renderBugTable();
+                else if (type === 'dev') { renderDevTable(); updateDevSummary(); }
+                else if (type === 'enh') renderEnhancementsTable();
+                showToast('Updated!', 'success');
+            }
+
+            input.addEventListener('blur', doSave);
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+                if (e.key === 'Escape') {
+                    saved = true;
+                    if (type === 'bug') renderBugTable();
+                    else if (type === 'dev') renderDevTable();
+                    else if (type === 'enh') renderEnhancementsTable();
+                }
+                if (e.key === 'Tab') {
+                    e.preventDefault(); doSave();
+                    setTimeout(() => {
+                        const all = Array.from(document.querySelectorAll('td.editable'));
+                        const tbl = cell.closest('table');
+                        const cells = all.filter(c => c.closest('table') === tbl);
+                        const idx = cells.indexOf(cell);
+                        const next = e.shiftKey ? idx - 1 : idx + 1;
+                        if (next >= 0 && next < cells.length) {
+                            cells[next].classList.add('selected');
+                            cells[next].focus();
+                        }
+                    }, 50);
+                }
+            });
+        }
+
+        // ============ MODAL OPERATIONS ============
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function editBug(id) {
+            const bug = data.bugs.find(b => b.id === id);
+            if (!bug) return;
+
+            currentEditingId = id;
+            currentEditingType = 'bug';
+
+            document.getElementById('bugDetailTitle').textContent = `Edit ${id}`;
+            document.getElementById('bugTitle').value = bug.title;
+            document.getElementById('bugType').value = bug.type;
+            document.getElementById('bugPriority').value = bug.priority;
+            document.getElementById('bugStatus').value = bug.status;
+            document.getElementById('bugDateOpened').value = bug.dateOpened;
+            document.getElementById('bugDateResolved').value = bug.dateResolved;
+            document.getElementById('bugSlackLink').value = bug.slackThread;
+            document.getElementById('bugDescription').value = bug.description || '';
+            renderRelatedItems('bugRelatedItems', bug);
+
+            openModal('bugDetailModal');
+        }
+
+        function saveBug() {
+            if (!currentEditingId) {
+                const newId = 'BUG-' + String(data.bugs.length + 1).padStart(3, '0');
+                data.bugs.push({
+                    id: newId,
+                    title: document.getElementById('bugTitle').value,
+                    type: document.getElementById('bugType').value,
+                    priority: document.getElementById('bugPriority').value,
+                    status: document.getElementById('bugStatus').value,
+                    dateOpened: document.getElementById('bugDateOpened').value,
+                    dateResolved: document.getElementById('bugDateResolved').value,
+                    slackThread: document.getElementById('bugSlackLink').value,
+                    description: document.getElementById('bugDescription').value
+                });
+            } else {
+                const bug = data.bugs.find(b => b.id === currentEditingId);
+                if (bug) {
+                    bug.title = document.getElementById('bugTitle').value;
+                    bug.type = document.getElementById('bugType').value;
+                    bug.priority = document.getElementById('bugPriority').value;
+                    bug.status = document.getElementById('bugStatus').value;
+                    bug.dateOpened = document.getElementById('bugDateOpened').value;
+                    bug.dateResolved = document.getElementById('bugDateResolved').value;
+                    bug.slackThread = document.getElementById('bugSlackLink').value;
+                    bug.description = document.getElementById('bugDescription').value;
+                }
+            }
+
+            saveData();
+            renderBugTable();
+            closeModal('bugDetailModal');
+            currentEditingId = null;
+            currentEditingType = null;
+            showToast('Bug saved!', 'success');
+        }
+
+        function deleteBug(id) {
+            if (confirm('Delete this bug?')) {
+                data.bugs = data.bugs.filter(b => b.id !== id);
+                saveData();
+                renderBugTable();
+                showToast('Bug deleted', 'success');
+            }
+        }
+
+        function editDevItem(id) {
+            const item = data.devQueue.find(d => d.id === id);
+            if (!item) return;
+
+            currentEditingId = id;
+            currentEditingType = 'dev';
+
+            document.getElementById('devDetailTitle').textContent = `Edit ${id}`;
+            document.getElementById('devItem').value = item.item;
+            document.getElementById('devPriority').value = item.priority;
+            document.getElementById('devStatus').value = item.status;
+            document.getElementById('devBackendHrs').value = item.backendHrs;
+            document.getElementById('devFrontendHrs').value = item.frontendHrs;
+            document.getElementById('devSlackThread').value = item.slackThread;
+            document.getElementById('devDescription').value = item.description || '';
+            renderRelatedItems('devRelatedItems', item);
+
+            openModal('devDetailModal');
+        }
+
+        function saveDevItem() {
+            if (!currentEditingId) {
+                const newId = 'DEV-' + String(data.devQueue.length + 1).padStart(3, '0');
+                data.devQueue.push({
+                    id: newId,
+                    item: document.getElementById('devItem').value,
+                    priority: document.getElementById('devPriority').value,
+                    status: document.getElementById('devStatus').value,
+                    backendHrs: parseInt(document.getElementById('devBackendHrs').value) || 0,
+                    frontendHrs: parseInt(document.getElementById('devFrontendHrs').value) || 0,
+                    slackThread: document.getElementById('devSlackThread').value,
+                    description: document.getElementById('devDescription').value
+                });
+            } else {
+                const item = data.devQueue.find(d => d.id === currentEditingId);
+                if (item) {
+                    item.item = document.getElementById('devItem').value;
+                    item.priority = document.getElementById('devPriority').value;
+                    item.status = document.getElementById('devStatus').value;
+                    item.backendHrs = parseInt(document.getElementById('devBackendHrs').value) || 0;
+                    item.frontendHrs = parseInt(document.getElementById('devFrontendHrs').value) || 0;
+                    item.slackThread = document.getElementById('devSlackThread').value;
+                    item.description = document.getElementById('devDescription').value;
+                }
+            }
+
+            saveData();
+            renderDevTable();
+            closeModal('devDetailModal');
+            currentEditingId = null;
+            currentEditingType = null;
+            showToast('Dev item saved!', 'success');
+        }
+
+        function deleteDevItem(id) {
+            if (confirm('Delete this dev item?')) {
+                data.devQueue = data.devQueue.filter(d => d.id !== id);
+                saveData();
+                renderDevTable();
+                showToast('Dev item deleted', 'success');
+            }
+        }
+
+        function editEnhancement(id) {
+            const enh = data.enhancements.find(e => e.id === id);
+            if (!enh) return;
+
+            currentEditingId = id;
+            currentEditingType = 'enhancement';
+
+            document.getElementById('enhDetailTitle').textContent = `Edit ${id}`;
+            document.getElementById('enhFeature').value = enh.feature;
+            document.getElementById('enhCategory').value = enh.category;
+            document.getElementById('enhTimesRequested').value = enh.timesRequested;
+            document.getElementById('enhUpvotes').value = enh.upvotes;
+            document.getElementById('enhRoadmapPhase').value = enh.roadmapPhase;
+            document.getElementById('enhSampleDetails').value = enh.sampleDetails || '';
+            renderRelatedItems('enhRelatedItems', enh);
+
+            openModal('enhDetailModal');
+        }
+
+        function saveEnhancement() {
+            if (!currentEditingId) {
+                const newId = 'ENH-' + String(data.enhancements.length + 1).padStart(3, '0');
+                data.enhancements.push({
+                    id: newId,
+                    feature: document.getElementById('enhFeature').value,
+                    category: document.getElementById('enhCategory').value,
+                    timesRequested: parseInt(document.getElementById('enhTimesRequested').value) || 0,
+                    upvotes: parseInt(document.getElementById('enhUpvotes').value) || 0,
+                    roadmapPhase: document.getElementById('enhRoadmapPhase').value,
+                    sampleDetails: document.getElementById('enhSampleDetails').value
+                });
+            } else {
+                const enh = data.enhancements.find(e => e.id === currentEditingId);
+                if (enh) {
+                    enh.feature = document.getElementById('enhFeature').value;
+                    enh.category = document.getElementById('enhCategory').value;
+                    enh.timesRequested = parseInt(document.getElementById('enhTimesRequested').value) || 0;
+                    enh.upvotes = parseInt(document.getElementById('enhUpvotes').value) || 0;
+                    enh.roadmapPhase = document.getElementById('enhRoadmapPhase').value;
+                    enh.sampleDetails = document.getElementById('enhSampleDetails').value;
+                }
+            }
+
+            saveData();
+            renderEnhancementsTable();
+            closeModal('enhDetailModal');
+            currentEditingId = null;
+            currentEditingType = null;
+            showToast('Enhancement saved!', 'success');
+        }
+
+        function deleteEnhancement(id) {
+            if (confirm('Delete this enhancement?')) {
+                data.enhancements = data.enhancements.filter(e => e.id !== id);
+                saveData();
+                renderEnhancementsTable();
+                showToast('Enhancement deleted', 'success');
+            }
+        }
+
+        function upvoteEnhancement(id) {
+            const enh = data.enhancements.find(e => e.id === id);
+            if (enh) {
+                enh.upvotes++;
+                enh.timesRequested++;
+                saveData();
+                renderEnhancementsTable();
+                showToast('Upvoted! 👍', 'success');
+            }
+        }
+
+        function showEnhDetails(id) {
+            editEnhancement(id);
+        }
+
+        // ============ TAB SWITCHING ============
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            const titles = {
+                'overview': 'Overview',
+                'bugs': 'Bugs',
+                'dev': 'Dev Queue',
+                'enhancements': 'Enhancements',
+                'roadmap': 'Roadmap'
+            };
+            document.getElementById('pageTitle').textContent = titles[tabName];
+        }
+
+        // ============ SEARCH & FILTER ============
+        function setupSearchAndFilter() {
+            document.getElementById('bugSearch').addEventListener('input', (e) => {
+                const activeFilter = document.querySelector('#bugFilters .btn-secondary.active').getAttribute('data-filter');
+                renderBugTable(activeFilter, e.target.value);
+            });
+
+            document.querySelectorAll('#bugFilters .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#bugFilters .btn-secondary').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const searchTerm = document.getElementById('bugSearch').value;
+                    renderBugTable(this.getAttribute('data-filter'), searchTerm);
+                });
+            });
+
+            document.getElementById('devSearch').addEventListener('input', (e) => {
+                renderDevTable(e.target.value);
+            });
+
+            document.getElementById('enhSearch').addEventListener('input', (e) => {
+                const activeFilter = document.querySelector('#enhFilters .btn-secondary.active')?.getAttribute('data-filter') || 'all';
+                renderEnhancementsTable(activeFilter, e.target.value);
+            });
+
+            document.querySelectorAll('#enhFilters .btn-secondary').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#enhFilters .btn-secondary').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const searchTerm = document.getElementById('enhSearch').value;
+                    renderEnhancementsTable(this.getAttribute('data-filter'), searchTerm);
+                });
+            });
+        }
+
+        let activeDevFilter = null;
+        function filterDevByStatus(status) {
+            activeDevFilter = (activeDevFilter === status) ? null : status;
+            const tbody = document.getElementById('devTableBody');
+            tbody.innerHTML = '';
+            let items = data.devQueue;
+            if (activeDevFilter) {
+                items = items.filter(d => d.status === activeDevFilter);
+            }
+            const searchTerm = document.getElementById('devSearch').value;
+            if (searchTerm) {
+                items = items.filter(d => d.item.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
+            if (items.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--gray);">No dev items found</td></tr>';
+                return;
+            }
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="editable" data-id="${item.id}" data-field="item">${item.item}</td>
+                    <td class="editable" data-id="${item.id}" data-field="priority"><span class="pill pill-${item.priority}">${item.priority}</span></td>
+                    <td class="editable" data-id="${item.id}" data-field="status"><span class="pill pill-${item.status}">${item.status}</span></td>
+                    <td class="editable" data-id="${item.id}" data-field="backendHrs">${item.backendHrs}</td>
+                    <td class="editable" data-id="${item.id}" data-field="frontendHrs">${item.frontendHrs}</td>
+                    <td><a href="${item.slackThread}" target="_blank" style="color:var(--primary-blue);text-decoration:none;">${item.slackThread ? '🔗' : '-'}</a></td>
+                    <td>
+                        <button class="btn-icon" onclick="editDevItem('${item.id}')">✎</button>
+                        <button class="btn-icon" onclick="deleteDevItem('${item.id}')" style="color:var(--red);">🗑</button>
+                    </td>`;
+                tbody.appendChild(row);
+            });
+            attachEditableListeners();
+        }
+
+        // ============ RELATED ITEMS RENDERING ============
+        function renderRelatedPills(item) {
+            let pills = '';
+            if (item.relatedBugs && item.relatedBugs.length) {
+                pills += item.relatedBugs.map(id => `<span class="related-pill related-pill-bug" onclick="editBug('${id}')" title="${id}">${id}</span>`).join('');
+            }
+            if (item.relatedDev && item.relatedDev.length) {
+                pills += item.relatedDev.map(id => `<span class="related-pill related-pill-dev" onclick="editDevItem('${id}')" title="${id}">${id}</span>`).join('');
+            }
+            if (item.relatedEnhancements && item.relatedEnhancements.length) {
+                pills += item.relatedEnhancements.map(id => `<span class="related-pill related-pill-enh" onclick="editEnhancement('${id}')" title="${id}">${id}</span>`).join('');
+            }
+            if (item.relatedRoadmap && item.relatedRoadmap.length) {
+                pills += item.relatedRoadmap.map(id => `<span class="related-pill related-pill-feat" onclick="event.stopPropagation()" title="${id}">${id}</span>`).join('');
+            }
+            return pills || '<span style="color:#9ca3af;font-size:11px;">—</span>';
+        }
+
+        function renderRelatedItems(containerId, item) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            let html = '';
+
+            function makeSection(label, field, pillClass, emoji, items, nameKey) {
+                let s = `<div style="margin-bottom:10px;"><label style="font-size:11px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;">${label}</label>`;
+                s += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;">';
+                if (item[field] && item[field].length) {
+                    item[field].forEach(id => {
+                        const found = items.find(x => x.id === id);
+                        const name = found ? (found[nameKey] || '').substring(0, 22) : '';
+                        s += `<span class="related-pill ${pillClass}" style="display:flex;align-items:center;gap:3px;">${emoji} ${id}${name ? ': '+name : ''} <span onclick="removeRelation('${containerId}','${field}','${id}')" style="cursor:pointer;font-weight:800;margin-left:2px;opacity:0.7;">×</span></span>`;
+                    });
+                } else {
+                    s += '<span style="color:#bbb;font-size:11px;">None</span>';
+                }
+                s += '</div>';
+                s += `<div style="display:flex;gap:6px;"><select id="${containerId}_${field}" style="flex:1;padding:5px 8px;border:1px solid #e5e7eb;border-radius:4px;font-size:12px;"><option value="">Add ${label.toLowerCase()}...</option>`;
+                items.forEach(x => {
+                    if (!item[field] || !item[field].includes(x.id)) {
+                        s += `<option value="${x.id}">${x.id}: ${(x[nameKey]||'').substring(0,35)}</option>`;
+                    }
+                });
+                s += `</select><button class="btn btn-small btn-primary" onclick="addRelation('${containerId}','${field}')" style="padding:4px 10px;font-size:11px;">+</button></div></div>`;
+                return s;
+            }
+
+            html += makeSection('Related Bugs', 'relatedBugs', 'related-pill-bug', '🐛', data.bugs, 'title');
+            html += makeSection('Related Dev Items', 'relatedDev', 'related-pill-dev', '🔧', data.devQueue, 'item');
+            html += makeSection('Related Enhancements', 'relatedEnhancements', 'related-pill-enh', '⭐', data.enhancements, 'feature');
+            html += makeSection('Related Roadmap', 'relatedRoadmap', 'related-pill-feat', '🗺️', data.roadmap, 'feature');
+
+            container.innerHTML = html;
+        }
+
+        function getEditingItem() {
+            if (!currentEditingId) return null;
+            if (currentEditingType === 'bug') return data.bugs.find(b => b.id === currentEditingId);
+            if (currentEditingType === 'dev') return data.devQueue.find(d => d.id === currentEditingId);
+            if (currentEditingType === 'enhancement') return data.enhancements.find(e => e.id === currentEditingId);
+            return null;
+        }
+
+        function addRelation(containerId, field) {
+            const select = document.getElementById(containerId + '_' + field);
+            if (!select || !select.value) return;
+            const item = getEditingItem();
+            if (!item) return;
+            if (!item[field]) item[field] = [];
+            if (!item[field].includes(select.value)) {
+                item[field].push(select.value);
+                saveData();
+                renderRelatedItems(containerId, item);
+                showToast('Related item added', 'success');
+            }
+        }
+
+        function removeRelation(containerId, field, relatedId) {
+            const item = getEditingItem();
+            if (!item || !item[field]) return;
+            item[field] = item[field].filter(id => id !== relatedId);
+            saveData();
+            renderRelatedItems(containerId, item);
+            showToast('Related item removed', 'info');
+        }
+
+        // ============ SORTING ============
+        function setupSorting() {
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.addEventListener('click', function() {
+                    const table = this.closest('table');
+                    const tbody = table.querySelector('tbody');
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const sortField = this.getAttribute('data-sort');
+                    const isAsc = this.classList.contains('sort-asc');
+
+                    // Remove sort indicators from all headers in this table
+                    table.querySelectorAll('th.sortable').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+
+                    // Set sort indicator
+                    if (isAsc) {
+                        this.classList.add('sort-desc');
+                    } else {
+                        this.classList.add('sort-asc');
+                    }
+
+                    rows.sort((a, b) => {
+                        let aVal = a.querySelector(`td[data-field="${sortField}"]`)?.textContent.trim() || '';
+                        let bVal = b.querySelector(`td[data-field="${sortField}"]`)?.textContent.trim() || '';
+
+                        // Try to parse as number
+                        const aNum = parseFloat(aVal);
+                        const bNum = parseFloat(bVal);
+                        if (!isNaN(aNum) && !isNaN(bNum)) {
+                            return isAsc ? aNum - bNum : bNum - aNum;
+                        }
+
+                        return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                    });
+
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+                    attachEditableListeners();
+                });
+            });
+        }
+
+        // ============ BUTTON HANDLERS ============
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            renderAllTables();
+            setupSearchAndFilter();
+            setupSorting();
+
+            // Nav tabs
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchTab(this.getAttribute('data-tab'));
+                });
+            });
+
+            // Add buttons
+            document.getElementById('addBugBtn').addEventListener('click', function() {
+                currentEditingId = null;
+                currentEditingType = null;
+                document.getElementById('bugDetailTitle').textContent = 'New Bug';
+                document.getElementById('bugTitle').value = '';
+                document.getElementById('bugType').value = 'bug';
+                document.getElementById('bugPriority').value = 'high';
+                document.getElementById('bugStatus').value = 'review';
+                document.getElementById('bugDateOpened').value = new Date().toISOString().split('T')[0];
+                document.getElementById('bugDateResolved').value = '';
+                document.getElementById('bugSlackLink').value = '';
+                document.getElementById('bugDescription').value = '';
+                openModal('bugDetailModal');
+            });
+
+            document.getElementById('addDevBtn').addEventListener('click', function() {
+                currentEditingId = null;
+                currentEditingType = null;
+                document.getElementById('devDetailTitle').textContent = 'New Dev Item';
+                document.getElementById('devItem').value = '';
+                document.getElementById('devPriority').value = 'p1';
+                document.getElementById('devStatus').value = 'not-started';
+                document.getElementById('devBackendHrs').value = '';
+                document.getElementById('devFrontendHrs').value = '';
+                document.getElementById('devSlackThread').value = '';
+                document.getElementById('devDescription').value = '';
+                openModal('devDetailModal');
+            });
+
+            document.getElementById('addEnhBtn').addEventListener('click', function() {
+                currentEditingId = null;
+                currentEditingType = null;
+                document.getElementById('enhDetailTitle').textContent = 'New Enhancement';
+                document.getElementById('enhFeature').value = '';
+                document.getElementById('enhCategory').value = 'ux-ui';
+                document.getElementById('enhTimesRequested').value = '';
+                document.getElementById('enhUpvotes').value = '';
+                document.getElementById('enhRoadmapPhase').value = '';
+                document.getElementById('enhSampleDetails').value = '';
+                openModal('enhDetailModal');
+            });
+
+            // Add Roadmap feature button — opens enhancement creation modal
+            document.getElementById('addRoadmapBtn').addEventListener('click', function() {
+                currentEditingId = null;
+                currentEditingType = null;
+                document.getElementById('enhDetailTitle').textContent = 'New Enhancement (from Roadmap)';
+                document.getElementById('enhFeature').value = '';
+                document.getElementById('enhCategory').value = 'ux-ui';
+                document.getElementById('enhTimesRequested').value = '1';
+                document.getElementById('enhUpvotes').value = '0';
+                document.getElementById('enhRoadmapPhase').value = '';
+                document.getElementById('enhSampleDetails').value = '';
+                openModal('enhDetailModal');
+            });
+
+            // Setup button
+            document.getElementById('setupBtn').addEventListener('click', function() {
+                document.getElementById('sheetsUrl').value = data.sheetUrl || '';
+                document.getElementById('connectionStatus').textContent = data.sheetUrl ? 'URL saved' : 'Not connected';
+                document.getElementById('connectionStatus').style.color = data.sheetUrl ? '#10b981' : 'var(--gray)';
+                openModal('setupModal');
+            });
+
+            // Auto-sync on load if sheet URL is configured
+            if (data.sheetUrl) {
+                autoSync();
+                setInterval(autoSync, 5 * 60 * 1000);
+            }
+
+            // Modal close on background click
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) this.classList.remove('active');
+                });
+            });
+        });
+
+        // ============ GOOGLE SHEETS SYNC ============
+
+        function getBaseUrl(inputUrl) {
+            // Normalize any Google Sheets URL to the /pub base
+            let url = inputUrl.trim();
+            // Remove any query params and hash
+            url = url.split('?')[0].split('#')[0];
+            // Handle pubhtml -> pub
+            if (url.endsWith('/pubhtml')) url = url.replace('/pubhtml', '/pub');
+            // Ensure it ends with /pub
+            if (!url.endsWith('/pub')) {
+                if (url.endsWith('/')) url += 'pub';
+                else url += '/pub';
+            }
+            return url;
+        }
+
+        function parseCSV(text) {
+            const rows = [];
+            let current = '';
+            let inQuotes = false;
+            let row = [];
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (inQuotes) {
+                    if (ch === '"' && text[i+1] === '"') { current += '"'; i++; }
+                    else if (ch === '"') { inQuotes = false; }
+                    else { current += ch; }
+                } else {
+                    if (ch === '"') { inQuotes = true; }
+                    else if (ch === ',') { row.push(current.trim()); current = ''; }
+                    else if (ch === '\n' || (ch === '\r' && text[i+1] === '\n')) {
+                        row.push(current.trim()); current = '';
+                        if (row.some(c => c !== '')) rows.push(row);
+                        row = [];
+                        if (ch === '\r') i++;
+                    } else { current += ch; }
+                }
+            }
+            row.push(current.trim());
+            if (row.some(c => c !== '')) rows.push(row);
+            return rows;
+        }
+
+        function parseRelatedIds(val) {
+            if (!val || val === '—' || val === '-') return [];
+            return val.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        }
+
+        function identifySheet(rows) {
+            // Identify which sheet this is by checking the header row
+            if (!rows || rows.length === 0) return null;
+            const header = rows[0].map(h => (h || '').toLowerCase().trim());
+            // Bugs: has "title" and "type" and "date opened"
+            if (header.includes('title') && header.includes('type') && header.some(h => h.includes('date'))) return 'Bugs';
+            // Dev Queue: has "item" and "backend hrs"
+            if (header.includes('item') && header.some(h => h.includes('backend'))) return 'Dev Queue';
+            // Enhancements: has "feature" and "upvotes"
+            if (header.includes('feature') && header.some(h => h.includes('upvote'))) return 'Enhancements';
+            // Enhancements alt: has "feature" and "category"
+            if (header.includes('feature') && header.includes('category')) return 'Enhancements';
+            return null;
+        }
+
+        async function discoverSheets(baseUrl) {
+            // Strategy 1: Fetch the pubhtml page to discover GIDs from tab links
+            const discovered = {};
+            try {
+                const htmlUrl = baseUrl.replace('/pub', '/pubhtml');
+                const resp = await fetch(htmlUrl);
+                if (resp.ok) {
+                    const html = await resp.text();
+                    // Google Sheets pubhtml has tab links with gid= in href
+                    // Pattern: <a ... href="...gid=DIGITS...">SheetName</a>
+                    const patterns = [
+                        /gid=(\d+)[^"]*"[^>]*>([^<]+)</g,
+                        /href="#gid=(\d+)"[^>]*>([^<]+)</g,
+                        /href="\?gid=(\d+)[^"]*"[^>]*>([^<]+)</g
+                    ];
+                    for (const regex of patterns) {
+                        let match;
+                        while ((match = regex.exec(html)) !== null) {
+                            const gid = match[1];
+                            const name = match[2].trim();
+                            if (['Bugs', 'Dev Queue', 'Enhancements'].includes(name)) {
+                                discovered[name] = gid;
+                            }
+                        }
+                        if (Object.keys(discovered).length >= 3) break;
+                    }
+                }
+            } catch (e) { /* continue to fallback */ }
+
+            if (Object.keys(discovered).length >= 3) return discovered;
+
+            // Strategy 2: Brute-force — try GIDs 0-9 and identify sheets by header content
+            console.log('GID discovery from HTML found', Object.keys(discovered).length, 'sheets. Trying brute-force...');
+            for (let gid = 0; gid <= 9; gid++) {
+                if (Object.keys(discovered).length >= 3) break;
+                try {
+                    const csvUrl = `${baseUrl}?gid=${gid}&single=true&output=csv`;
+                    const resp = await fetch(csvUrl);
+                    if (!resp.ok) continue;
+                    const text = await resp.text();
+                    if (!text || text.length < 10) continue;
+                    const rows = parseCSV(text);
+                    const sheetName = identifySheet(rows);
+                    if (sheetName && !discovered[sheetName]) {
+                        discovered[sheetName] = String(gid);
+                        console.log(`Found "${sheetName}" at gid=${gid}`);
+                    }
+                } catch (e) { continue; }
+            }
+
+            return discovered;
+        }
+
+        function parseBugsCSV(rows) {
+            const bugs = [];
+            // Find header row (skip notes rows — look for row with "ID" in first cell)
+            let startIdx = 1; // default: data starts at row 1
+            for (let i = 0; i < Math.min(5, rows.length); i++) {
+                if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
+            }
+            // Skip the notes/allowed-values row if it exists (row right after header that doesn't start with BUG-)
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('BUG')) {
+                startIdx++;
+            }
+            for (let i = startIdx; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r[0] || r[0].trim() === '') continue;
+                bugs.push({
+                    id: r[0] || '', title: r[1] || '', type: (r[2] || 'bug').toLowerCase(),
+                    priority: (r[3] || 'medium').toLowerCase(), status: (r[4] || 'review').toLowerCase(),
+                    dateOpened: r[5] || '', dateResolved: r[6] || '', slackThread: r[7] || '',
+                    description: r[8] || '',
+                    relatedBugs: parseRelatedIds(r[9]), relatedDev: parseRelatedIds(r[10]),
+                    relatedEnhancements: parseRelatedIds(r[11]), relatedRoadmap: parseRelatedIds(r[12])
+                });
+            }
+            return bugs;
+        }
+
+        function parseDevCSV(rows) {
+            const items = [];
+            let startIdx = 1;
+            for (let i = 0; i < Math.min(5, rows.length); i++) {
+                if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
+            }
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('DEV')) {
+                startIdx++;
+            }
+            for (let i = startIdx; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r[0] || r[0].trim() === '') continue;
+                items.push({
+                    id: r[0] || '', item: r[1] || '', priority: (r[2] || 'p1').toLowerCase(),
+                    status: (r[3] || 'not-started').toLowerCase(),
+                    backendHrs: parseInt(r[4]) || 0, frontendHrs: parseInt(r[5]) || 0,
+                    rowNumber: parseInt(r[6]) || 0, description: r[7] || '',
+                    relatedBugs: parseRelatedIds(r[8]), relatedEnhancements: parseRelatedIds(r[9]),
+                    relatedRoadmap: parseRelatedIds(r[10])
+                });
+            }
+            return items;
+        }
+
+        function parseEnhCSV(rows) {
+            const items = [];
+            let startIdx = 1;
+            for (let i = 0; i < Math.min(5, rows.length); i++) {
+                if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
+            }
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('ENH')) {
+                startIdx++;
+            }
+            for (let i = startIdx; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r[0] || r[0].trim() === '') continue;
+                items.push({
+                    id: r[0] || '', feature: r[1] || '', category: (r[2] || 'ux-ui').toLowerCase(),
+                    timesRequested: 0, upvotes: parseInt(r[3]) || 0,
+                    roadmapPhase: r[4] || 'Idea Phase', sampleDetails: r[5] || '',
+                    relatedBugs: parseRelatedIds(r[6]), relatedDev: parseRelatedIds(r[7]),
+                    relatedRoadmap: parseRelatedIds(r[8])
+                });
+            }
+            return items;
+        }
+
+        function updateSyncIndicator(status, text) {
+            const el = document.getElementById('syncIndicator');
+            if (!el) return;
+            el.style.display = 'inline';
+            if (status === 'synced') { el.textContent = '● Live — ' + text; el.style.color = '#10b981'; }
+            else if (status === 'error') { el.textContent = '● Error'; el.style.color = '#ef4444'; }
+            else if (status === 'syncing') { el.textContent = '↻ Syncing...'; el.style.color = '#fbbf24'; }
+            else { el.style.display = 'none'; }
+        }
+
+        async function fetchSheetData(url) {
+            const baseUrl = getBaseUrl(url);
+            const gidMap = await discoverSheets(baseUrl);
+            const needed = ['Bugs', 'Dev Queue', 'Enhancements'];
+            const missing = needed.filter(s => gidMap[s] === undefined);
+            if (missing.length > 0) {
+                throw new Error(`Could not find sheet tabs: ${missing.join(', ')}. Make sure your Google Sheet has tabs named exactly "Bugs", "Dev Queue", and "Enhancements".`);
+            }
+            const results = {};
+            for (const sheet of needed) {
+                const csvUrl = `${baseUrl}?gid=${gidMap[sheet]}&single=true&output=csv`;
+                const resp = await fetch(csvUrl);
+                if (!resp.ok) throw new Error(`Failed to fetch ${sheet} (gid=${gidMap[sheet]}): HTTP ${resp.status}`);
+                results[sheet] = parseCSV(await resp.text());
+            }
+            return results;
+        }
+
+        async function testSheetConnection() {
+            const url = document.getElementById('sheetsUrl').value.trim();
+            const statusEl = document.getElementById('connectionStatus');
+            if (!url) { statusEl.textContent = 'Please enter a URL'; statusEl.style.color = '#ef4444'; return; }
+            statusEl.innerHTML = 'Testing connection... <em>(discovering sheets)</em>'; statusEl.style.color = 'var(--primary-blue)';
+            try {
+                const sheetData = await fetchSheetData(url);
+                const bugCount = Math.max(0, sheetData['Bugs'].length - 2);
+                const devCount = Math.max(0, sheetData['Dev Queue'].length - 2);
+                const enhCount = Math.max(0, sheetData['Enhancements'].length - 2);
+                statusEl.innerHTML = '<span style="color: #10b981;">Connected!</span> Found ' + bugCount + ' bugs, ' + devCount + ' dev items, ' + enhCount + ' enhancements';
+            } catch (e) {
+                if (e.message === 'Failed to fetch' || e.message.includes('NetworkError')) {
+                    statusEl.innerHTML = '<span style="color: #ef4444;">Network error.</span><br><span style="font-size: 11px;">Make sure the sheet is published to the web (File → Share → Publish to web). If running the HTML locally, deploy to GitHub Pages first.</span>';
+                } else {
+                    statusEl.innerHTML = '<span style="color: #ef4444;">Error:</span> ' + e.message;
+                }
+            }
+        }
+
+        async function saveAndSync() {
+            const url = document.getElementById('sheetsUrl').value.trim();
+            data.sheetUrl = url;
+            saveData();
+            if (!url) { closeModal('setupModal'); showToast('Sheet URL cleared. Using local data.', 'info'); updateSyncIndicator('none'); return; }
+            updateSyncIndicator('syncing');
+            try {
+                const sheetData = await fetchSheetData(url);
+                data.bugs = parseBugsCSV(sheetData['Bugs']);
+                data.devQueue = parseDevCSV(sheetData['Dev Queue']);
+                data.enhancements = parseEnhCSV(sheetData['Enhancements']);
+                ensureRelatedArrays();
+                saveData();
+                renderAllTables();
+                const now = new Date().toLocaleTimeString();
+                updateSyncIndicator('synced', now);
+                closeModal('setupModal');
+                showToast('Synced! ' + data.bugs.length + ' bugs, ' + data.devQueue.length + ' dev items, ' + data.enhancements.length + ' enhancements', 'success');
+            } catch (e) {
+                updateSyncIndicator('error');
+                showToast('Sync failed: ' + e.message, 'error');
+            }
+        }
+
+        async function autoSync() {
+            if (!data.sheetUrl) return;
+            updateSyncIndicator('syncing');
+            try {
+                const sheetData = await fetchSheetData(data.sheetUrl);
+                data.bugs = parseBugsCSV(sheetData['Bugs']);
+                data.devQueue = parseDevCSV(sheetData['Dev Queue']);
+                data.enhancements = parseEnhCSV(sheetData['Enhancements']);
+                ensureRelatedArrays();
+                saveData();
+                renderAllTables();
+                updateSyncIndicator('synced', new Date().toLocaleTimeString());
+            } catch (e) {
+                updateSyncIndicator('error');
+            }
+        }
+
+        // ============ TOAST NOTIFICATIONS ============
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
