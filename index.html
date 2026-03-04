@@ -1361,7 +1361,7 @@
                 </div>
                 <div class="modal-section">
                     <h3>Published Sheet URL</h3>
-                    <input type="text" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-.../pub?output=csv" style="width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: 13px; margin-top: 6px;">
+                    <input type="text" id="sheetsUrl" placeholder="Paste your published Google Sheets URL here" style="width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: 13px; margin-top: 6px;">
                     <div id="connectionStatus" style="font-size: 12px; margin-top: 8px; color: var(--gray);">Not connected</div>
                 </div>
             </div>
@@ -2624,13 +2624,9 @@
         // ============ GOOGLE SHEETS SYNC ============
 
         function getBaseUrl(inputUrl) {
-            // Normalize any Google Sheets URL to the /pub base
             let url = inputUrl.trim();
-            // Remove any query params and hash
             url = url.split('?')[0].split('#')[0];
-            // Handle pubhtml -> pub
             if (url.endsWith('/pubhtml')) url = url.replace('/pubhtml', '/pub');
-            // Ensure it ends with /pub
             if (!url.endsWith('/pub')) {
                 if (url.endsWith('/')) url += 'pub';
                 else url += '/pub';
@@ -2671,68 +2667,94 @@
         }
 
         function identifySheet(rows) {
-            // Identify which sheet this is by checking the header row
             if (!rows || rows.length === 0) return null;
             const header = rows[0].map(h => (h || '').toLowerCase().trim());
-            // Bugs: has "title" and "type" and "date opened"
             if (header.includes('title') && header.includes('type') && header.some(h => h.includes('date'))) return 'Bugs';
-            // Dev Queue: has "item" and "backend hrs"
             if (header.includes('item') && header.some(h => h.includes('backend'))) return 'Dev Queue';
-            // Enhancements: has "feature" and "upvotes"
-            if (header.includes('feature') && header.some(h => h.includes('upvote'))) return 'Enhancements';
-            // Enhancements alt: has "feature" and "category"
             if (header.includes('feature') && header.includes('category')) return 'Enhancements';
+            if (header.includes('feature') && header.some(h => h.includes('upvote'))) return 'Enhancements';
             return null;
         }
 
         async function discoverSheets(baseUrl) {
-            // Strategy 1: Fetch the pubhtml page to discover GIDs from tab links
             const discovered = {};
+
+            // Strategy 1: Fetch pubhtml and extract ALL gid numbers from the page
+            const allGids = new Set();
             try {
                 const htmlUrl = baseUrl.replace('/pub', '/pubhtml');
                 const resp = await fetch(htmlUrl);
                 if (resp.ok) {
                     const html = await resp.text();
-                    // Google Sheets pubhtml has tab links with gid= in href
-                    // Pattern: <a ... href="...gid=DIGITS...">SheetName</a>
-                    const patterns = [
-                        /gid=(\d+)[^"]*"[^>]*>([^<]+)</g,
-                        /href="#gid=(\d+)"[^>]*>([^<]+)</g,
-                        /href="\?gid=(\d+)[^"]*"[^>]*>([^<]+)</g
+                    // Extract all gid= numbers from anywhere in the HTML
+                    const gidRegex = /gid=(\d+)/g;
+                    let match;
+                    while ((match = gidRegex.exec(html)) !== null) {
+                        allGids.add(match[1]);
+                    }
+                    console.log('Found GIDs in pubhtml:', [...allGids]);
+
+                    // Also try to pair gids with sheet names from tab links
+                    const tabPatterns = [
+                        /gid=(\d+)[^>]*>([^<]+)</g,
+                        /href="[^"]*gid=(\d+)[^"]*"[^>]*>([^<]+)</g
                     ];
-                    for (const regex of patterns) {
-                        let match;
-                        while ((match = regex.exec(html)) !== null) {
-                            const gid = match[1];
-                            const name = match[2].trim();
+                    for (const regex of tabPatterns) {
+                        let m;
+                        while ((m = regex.exec(html)) !== null) {
+                            const name = m[2].trim();
                             if (['Bugs', 'Dev Queue', 'Enhancements'].includes(name)) {
-                                discovered[name] = gid;
+                                discovered[name] = m[1];
                             }
                         }
-                        if (Object.keys(discovered).length >= 3) break;
+                        if (Object.keys(discovered).length >= 3) return discovered;
                     }
                 }
-            } catch (e) { /* continue to fallback */ }
+            } catch (e) {
+                console.log('pubhtml fetch failed:', e.message);
+            }
 
-            if (Object.keys(discovered).length >= 3) return discovered;
+            // Strategy 2: Test each discovered GID by fetching CSV and checking headers
+            if (allGids.size > 0 && Object.keys(discovered).length < 3) {
+                console.log('Trying discovered GIDs by header matching...');
+                for (const gid of allGids) {
+                    if (Object.keys(discovered).length >= 3) break;
+                    try {
+                        const csvUrl = baseUrl + '?gid=' + gid + '&single=true&output=csv';
+                        const resp = await fetch(csvUrl);
+                        if (!resp.ok) continue;
+                        const text = await resp.text();
+                        if (!text || text.length < 10) continue;
+                        const rows = parseCSV(text);
+                        const sheetName = identifySheet(rows);
+                        if (sheetName && !discovered[sheetName]) {
+                            discovered[sheetName] = gid;
+                            console.log('Found "' + sheetName + '" at gid=' + gid);
+                        }
+                    } catch (e) { continue; }
+                }
+            }
 
-            // Strategy 2: Brute-force — try GIDs 0-9 and identify sheets by header content
-            console.log('GID discovery from HTML found', Object.keys(discovered).length, 'sheets. Trying brute-force...');
-            for (let gid = 0; gid <= 9; gid++) {
-                if (Object.keys(discovered).length >= 3) break;
-                try {
-                    const csvUrl = `${baseUrl}?gid=${gid}&single=true&output=csv`;
-                    const resp = await fetch(csvUrl);
-                    if (!resp.ok) continue;
-                    const text = await resp.text();
-                    if (!text || text.length < 10) continue;
-                    const rows = parseCSV(text);
-                    const sheetName = identifySheet(rows);
-                    if (sheetName && !discovered[sheetName]) {
-                        discovered[sheetName] = String(gid);
-                        console.log(`Found "${sheetName}" at gid=${gid}`);
-                    }
-                } catch (e) { continue; }
+            // Strategy 3: Last resort — try small sequential GIDs (0-5)
+            if (Object.keys(discovered).length < 3) {
+                console.log('Trying sequential GIDs 0-5...');
+                for (let gid = 0; gid <= 5; gid++) {
+                    if (Object.keys(discovered).length >= 3) break;
+                    if (allGids.has(String(gid))) continue; // already tried
+                    try {
+                        const csvUrl = baseUrl + '?gid=' + gid + '&single=true&output=csv';
+                        const resp = await fetch(csvUrl);
+                        if (!resp.ok) continue;
+                        const text = await resp.text();
+                        if (!text || text.length < 10) continue;
+                        const rows = parseCSV(text);
+                        const sheetName = identifySheet(rows);
+                        if (sheetName && !discovered[sheetName]) {
+                            discovered[sheetName] = String(gid);
+                            console.log('Found "' + sheetName + '" at gid=' + gid);
+                        }
+                    } catch (e) { continue; }
+                }
             }
 
             return discovered;
@@ -2740,15 +2762,11 @@
 
         function parseBugsCSV(rows) {
             const bugs = [];
-            // Find header row (skip notes rows — look for row with "ID" in first cell)
-            let startIdx = 1; // default: data starts at row 1
+            let startIdx = 1;
             for (let i = 0; i < Math.min(5, rows.length); i++) {
                 if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
             }
-            // Skip the notes/allowed-values row if it exists (row right after header that doesn't start with BUG-)
-            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('BUG')) {
-                startIdx++;
-            }
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('BUG')) startIdx++;
             for (let i = startIdx; i < rows.length; i++) {
                 const r = rows[i];
                 if (!r[0] || r[0].trim() === '') continue;
@@ -2770,9 +2788,7 @@
             for (let i = 0; i < Math.min(5, rows.length); i++) {
                 if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
             }
-            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('DEV')) {
-                startIdx++;
-            }
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('DEV')) startIdx++;
             for (let i = startIdx; i < rows.length; i++) {
                 const r = rows[i];
                 if (!r[0] || r[0].trim() === '') continue;
@@ -2794,9 +2810,7 @@
             for (let i = 0; i < Math.min(5, rows.length); i++) {
                 if (rows[i][0] && rows[i][0].toUpperCase() === 'ID') { startIdx = i + 1; break; }
             }
-            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('ENH')) {
-                startIdx++;
-            }
+            if (startIdx < rows.length && rows[startIdx][0] && !rows[startIdx][0].startsWith('ENH')) startIdx++;
             for (let i = startIdx; i < rows.length; i++) {
                 const r = rows[i];
                 if (!r[0] || r[0].trim() === '') continue;
@@ -2827,13 +2841,13 @@
             const needed = ['Bugs', 'Dev Queue', 'Enhancements'];
             const missing = needed.filter(s => gidMap[s] === undefined);
             if (missing.length > 0) {
-                throw new Error(`Could not find sheet tabs: ${missing.join(', ')}. Make sure your Google Sheet has tabs named exactly "Bugs", "Dev Queue", and "Enhancements".`);
+                throw new Error('Could not find sheets: ' + missing.join(', ') + '. Make sure tabs are named exactly "Bugs", "Dev Queue", "Enhancements".');
             }
             const results = {};
             for (const sheet of needed) {
-                const csvUrl = `${baseUrl}?gid=${gidMap[sheet]}&single=true&output=csv`;
+                const csvUrl = baseUrl + '?gid=' + gidMap[sheet] + '&single=true&output=csv';
                 const resp = await fetch(csvUrl);
-                if (!resp.ok) throw new Error(`Failed to fetch ${sheet} (gid=${gidMap[sheet]}): HTTP ${resp.status}`);
+                if (!resp.ok) throw new Error('Failed to fetch ' + sheet + ': HTTP ' + resp.status);
                 results[sheet] = parseCSV(await resp.text());
             }
             return results;
@@ -2843,18 +2857,18 @@
             const url = document.getElementById('sheetsUrl').value.trim();
             const statusEl = document.getElementById('connectionStatus');
             if (!url) { statusEl.textContent = 'Please enter a URL'; statusEl.style.color = '#ef4444'; return; }
-            statusEl.innerHTML = 'Testing connection... <em>(discovering sheets)</em>'; statusEl.style.color = 'var(--primary-blue)';
+            statusEl.innerHTML = 'Testing... <em>(discovering sheet tabs)</em>'; statusEl.style.color = 'var(--primary-blue)';
             try {
                 const sheetData = await fetchSheetData(url);
                 const bugCount = Math.max(0, sheetData['Bugs'].length - 2);
                 const devCount = Math.max(0, sheetData['Dev Queue'].length - 2);
                 const enhCount = Math.max(0, sheetData['Enhancements'].length - 2);
-                statusEl.innerHTML = '<span style="color: #10b981;">Connected!</span> Found ' + bugCount + ' bugs, ' + devCount + ' dev items, ' + enhCount + ' enhancements';
+                statusEl.innerHTML = '<span style="color:#10b981;">Connected!</span> Found ' + bugCount + ' bugs, ' + devCount + ' dev items, ' + enhCount + ' enhancements';
             } catch (e) {
                 if (e.message === 'Failed to fetch' || e.message.includes('NetworkError')) {
-                    statusEl.innerHTML = '<span style="color: #ef4444;">Network error.</span><br><span style="font-size: 11px;">Make sure the sheet is published to the web (File → Share → Publish to web). If running the HTML locally, deploy to GitHub Pages first.</span>';
+                    statusEl.innerHTML = '<span style="color:#ef4444;">Network error.</span><br><span style="font-size:11px;">Make sure the sheet is published (File → Share → Publish to web).</span>';
                 } else {
-                    statusEl.innerHTML = '<span style="color: #ef4444;">Error:</span> ' + e.message;
+                    statusEl.innerHTML = '<span style="color:#ef4444;">Error:</span> ' + e.message;
                 }
             }
         }
@@ -2863,7 +2877,7 @@
             const url = document.getElementById('sheetsUrl').value.trim();
             data.sheetUrl = url;
             saveData();
-            if (!url) { closeModal('setupModal'); showToast('Sheet URL cleared. Using local data.', 'info'); updateSyncIndicator('none'); return; }
+            if (!url) { closeModal('setupModal'); showToast('Sheet URL cleared.', 'info'); updateSyncIndicator('none'); return; }
             updateSyncIndicator('syncing');
             try {
                 const sheetData = await fetchSheetData(url);
@@ -2873,8 +2887,7 @@
                 ensureRelatedArrays();
                 saveData();
                 renderAllTables();
-                const now = new Date().toLocaleTimeString();
-                updateSyncIndicator('synced', now);
+                updateSyncIndicator('synced', new Date().toLocaleTimeString());
                 closeModal('setupModal');
                 showToast('Synced! ' + data.bugs.length + ' bugs, ' + data.devQueue.length + ' dev items, ' + data.enhancements.length + ' enhancements', 'success');
             } catch (e) {
