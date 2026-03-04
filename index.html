@@ -2621,6 +2621,16 @@
             });
         });
 
+        // ============ DATA INTEGRITY ============
+        function ensureRelatedArrays() {
+            const fields = ['relatedBugs', 'relatedDev', 'relatedEnhancements', 'relatedRoadmap'];
+            [data.bugs, data.devQueue, data.enhancements, data.roadmap].forEach(arr => {
+                (arr || []).forEach(item => { fields.forEach(f => { if (!item[f]) item[f] = []; }); });
+            });
+            if (data.devQueue) data.devQueue.forEach(d => { if (d.rowNumber === undefined) d.rowNumber = 0; });
+            if (data.enhancements) data.enhancements.forEach(e => { if (!e.roadmapPhase) e.roadmapPhase = 'Idea Phase'; });
+        }
+
         // ============ GOOGLE SHEETS SYNC ============
 
         function getBaseUrl(inputUrl) {
