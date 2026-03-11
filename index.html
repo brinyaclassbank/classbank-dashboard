@@ -66,8 +66,8 @@
         }
 
         .logo-container svg {
-            width: 32px;
-            height: auto;
+            height: 28px;
+            width: auto;
         }
 
         .logo-text {
@@ -130,7 +130,7 @@
         }
 
         .setup-btn {
-            background-color: var(--yellow);
+            background-color: var(--white);
             color: var(--dark-text);
             border: none;
             padding: 8px 16px;
@@ -143,7 +143,7 @@
         }
 
         .setup-btn:hover {
-            background-color: #fcd34d;
+            background-color: #f0f3ff;
             transform: translateY(-2px);
         }
 
@@ -364,6 +364,24 @@
             flex-wrap: wrap;
         }
 
+        .filter-select {
+            padding: 10px 14px;
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark-text);
+            background-color: var(--white);
+            cursor: pointer;
+            min-width: 140px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
         .btn {
             padding: 10px 16px;
             border: none;
@@ -556,9 +574,31 @@
             color: var(--gray);
         }
 
+        /* ROADMAP PHASE PILLS */
+        .pill-in-development {
+            background-color: #dbeafe;
+            color: var(--primary-blue);
+        }
+
+        .pill-on-deck {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        .pill-idea-phase {
+            background-color: #f3f4f6;
+            color: var(--gray);
+        }
+
+        .pill-completed {
+            background-color: #d1fae5;
+            color: var(--green);
+        }
+
         /* TABLES */
         .table-container {
-            overflow-x: auto;
+            overflow: auto;
+            max-height: calc(100vh - 200px);
             border-radius: 8px;
             border: 1px solid var(--light-gray);
             background-color: var(--white);
@@ -566,14 +606,15 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             background-color: var(--white);
         }
 
         thead {
             background-color: var(--table-header-bg);
             position: sticky;
-            top: 64px;
+            top: 0;
             z-index: 10;
         }
 
@@ -1109,17 +1150,25 @@
     <header>
         <div class="header-content">
             <div class="logo-container">
-                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FDE440;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#F9AB12;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <rect x="15" y="15" width="70" height="70" rx="8" fill="url(#logoGrad)"/>
-                    <text x="50" y="62" font-size="50" font-weight="700" text-anchor="middle" fill="#1a1a3e">C</text>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143.57 42.88">
+                  <g>
+                    <!-- Puzzle icon - orange circle with white puzzle piece -->
+                    <path fill="#F9AB12" d="M21.44,0C9.6,0,0,9.6,0,21.44s9.6,21.44,21.44,21.44,21.44-9.6,21.44-21.44S33.28,0,21.44,0ZM21.44,39.83c-10.16,0-18.39-8.23-18.39-18.39S11.28,3.05,21.44,3.05s18.39,8.23,18.39,18.39-8.23,18.39-18.39,18.39Z"/>
+                    <path fill="#FDE440" d="M38.55,21.44c0,9.45-7.66,17.1-17.11,17.1S4.34,30.89,4.34,21.44,12,4.34,21.44,4.34s17.11,7.65,17.11,17.1Z"/>
+                    <path fill="#fff" d="M29.23,20.95c-.96-.67-2.12-1.05-3.37-1.05h-2.87v-2.87c0-.68-.12-1.34-.33-1.94-.49-1.4-1.48-2.57-2.77-3.28v8.09h-2.87c-1.58,0-2.87-1.28-2.87-2.87s1.28-2.87,2.87-2.87c.66,0,1.26.22,1.75.6v-3.43c-.55-.17-1.14-.26-1.75-.26-3.29,0-5.96,2.66-5.96,5.96,0,2.98,2.19,5.45,5.05,5.89.29.04.6.07.91.07h2.87v2.87c0,2.25,1.25,4.21,3.09,5.22.85.47,1.83.73,2.87.73,3.29,0,5.96-2.67,5.96-5.96,0-2.04-1.02-3.83-2.58-4.91ZM25.86,28.72c-1.58,0-2.87-1.28-2.87-2.87v-2.87h2.87c1.58,0,2.87,1.28,2.87,2.87s-1.28,2.87-2.87,2.87Z"/>
+                    <!-- "Class" text - white -->
+                    <path fill="#fff" d="M60.14,14.15c2.17,0,3.61.76,5.01,1.9l-1.67,2.43c-.95-.87-2.04-1.32-3.34-1.32-2.48,0-4.04,1.77-4.04,4s1.55,4,4.04,4c1.3,0,2.39-.45,3.34-1.32l1.67,2.43c-1.4,1.15-2.83,1.9-5.01,1.9-4.6,0-7.49-3.22-7.49-7.01s2.89-7.01,7.49-7.01Z"/>
+                    <path fill="#fff" d="M65.39,27.95v-14.04h3.34v14.04h-3.34Z"/>
+                    <path fill="#fff" d="M80.49,17.9v10.06h-3.34v-1.38c-.64.99-1.63,1.59-3.05,1.59-2.89,0-4.85-2.29-4.85-5.26s1.88-5.22,4.83-5.22c1.32,0,2.45.62,3.07,1.55v-1.34h3.34ZM74.9,25.55c1.32,0,2.33-.95,2.33-2.54s-.95-2.68-2.37-2.68-2.25,1.16-2.25,2.58.87,2.64,2.29,2.64Z"/>
+                    <path fill="#fff" d="M83.29,24.36c.25,1.07,1.13,1.38,1.92,1.38.6,0,1.16-.19,1.16-.66,0-.27-.17-.43-.72-.66l-1.67-.7c-1.59-.58-2.68-1.57-2.68-2.99,0-1.84,1.84-3.05,4.1-3.05,1.4,0,2.95.47,3.82,2.29l-2.5.95c-.25-.74-.95-.89-1.36-.89-.54,0-.95.27-.95.68,0,.35.33.54.84.72l1.34.54c2.33.85,2.91,2.04,2.91,3.11,0,2.02-2.04,3.09-4.33,3.09-1.86,0-3.77-.7-4.31-2.83l2.43-.97Z"/>
+                    <path fill="#fff" d="M91.69,24.36c.25,1.07,1.13,1.38,1.92,1.38.6,0,1.16-.19,1.16-.66,0-.27-.18-.43-.72-.66l-1.67-.7c-1.59-.58-2.68-1.57-2.68-2.99,0-1.84,1.84-3.05,4.1-3.05,1.4,0,2.95.47,3.82,2.29l-2.5.95c-.25-.74-.95-.89-1.36-.89-.54,0-.95.27-.95.68,0,.35.33.54.84.72l1.34.54c2.33.85,2.91,2.04,2.91,3.11,0,2.02-2.04,3.09-4.33,3.09-1.86,0-3.77-.7-4.31-2.83l2.43-.97Z"/>
+                    <!-- "Bank" text - white -->
+                    <path fill="#fff" d="M107.32,20.87c1.63.29,2.72,1.9,2.72,3.18,0,2.35-2.02,3.9-4.99,3.9h-5.98v-13.61l5.42.02c2.83.02,4.97,1.44,4.97,3.79,0,1.05-.7,2.17-2.14,2.72ZM103.97,19.94c1.63,0,2.04-.72,2.04-1.49,0-.89-.74-1.34-1.69-1.34h-1.81v2.83h1.46ZM102.51,22.23v2.95h2.47c1.01,0,1.61-.54,1.61-1.32s-.52-1.63-2.5-1.63h-1.57Z"/>
+                    <path fill="#fff" d="M121.32,17.9v10.06h-3.34v-1.38c-.64.99-1.63,1.59-3.05,1.59-2.89,0-4.85-2.29-4.85-5.26s1.88-5.22,4.83-5.22c1.32,0,2.45.62,3.07,1.55v-1.34h3.34ZM115.73,25.55c1.32,0,2.33-.95,2.33-2.54s-.95-2.68-2.37-2.68-2.25,1.16-2.25,2.58.87,2.64,2.29,2.64Z"/>
+                    <path fill="#fff" d="M122.11,17.98h3.34v1.32c.72-1.07,1.71-1.53,2.99-1.53,2.93,0,3.55,2.45,3.55,4.64v5.63h-3.34v-5.44c0-.97-.37-2.15-1.59-2.15s-1.61,1.01-1.61,2.15v5.44h-3.34v-10.06Z"/>
+                    <path fill="#fff" d="M138.56,17.9h3.59v.45c-1.09,1.38-2.14,2.8-3.22,4.17l1.16,1.94c.45.68.82.83,1.32.83.21,0,.72-.12,1.03-.33.39.72.76,1.46,1.13,2.19-.95.8-1.94,1.01-2.81,1.01-1.63,0-2.62-.6-3.73-2.6l-1.16-2.12v4.5h-3.34v-14.04h3.34v8.04c.91-1.34,1.81-2.7,2.7-4.06Z"/>
+                  </g>
                 </svg>
-                <span class="logo-text">ClassBank</span>
             </div>
 
             <div class="nav-tabs">
@@ -1217,13 +1266,26 @@
                 <div class="search-bar">
                     <input type="text" id="bugSearch" placeholder="Search bugs...">
                 </div>
-                <div class="button-group" id="bugFilters">
-                    <button class="btn btn-secondary active" data-filter="all">All</button>
-                    <button class="btn btn-secondary" data-filter="high">High</button>
-                    <button class="btn btn-secondary" data-filter="medium">Medium</button>
-                    <button class="btn btn-secondary" data-filter="low">Low</button>
-                    <button class="btn btn-secondary" data-filter="resolved">Resolved</button>
-                </div>
+                <select class="filter-select" id="bugTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="bug">Bug</option>
+                    <option value="roster-sync">Roster Sync</option>
+                    <option value="performance">Performance</option>
+                </select>
+                <select class="filter-select" id="bugPriorityFilter">
+                    <option value="all">All Priorities</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select class="filter-select" id="bugStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="review">Under Internal Review</option>
+                    <option value="momentum">Sent to Momentum</option>
+                    <option value="progress">Fix in Progress</option>
+                    <option value="blocked">Blocked</option>
+                    <option value="resolved">Resolved</option>
+                </select>
             </div>
 
             <button class="btn btn-primary" id="addBugBtn">+ Add Bug</button>
@@ -1270,6 +1332,20 @@
                 <div class="search-bar">
                     <input type="text" id="devSearch" placeholder="Search dev items...">
                 </div>
+                <select class="filter-select" id="devPriorityFilter">
+                    <option value="all">All Priorities</option>
+                    <option value="p1">P1 2026</option>
+                    <option value="p2">P2 2026</option>
+                    <option value="p3">P3 2026</option>
+                </select>
+                <select class="filter-select" id="devStatusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="on-hold">On Hold</option>
+                    <option value="not-started">Not Started</option>
+                    <option value="progress">In Progress</option>
+                    <option value="blocked">Blocked</option>
+                    <option value="deployed">Deployed</option>
+                </select>
             </div>
 
             <button class="btn btn-primary" id="addDevBtn">+ Add Dev Item</button>
@@ -1300,14 +1376,24 @@
                 <div class="search-bar">
                     <input type="text" id="enhSearch" placeholder="Search enhancements...">
                 </div>
-                <div class="button-group" id="enhFilters">
-                    <button class="btn btn-secondary active" data-filter="all">All</button>
-                    <button class="btn btn-secondary" data-filter="ux-ui">UX/UI</button>
-                    <button class="btn btn-secondary" data-filter="financial-literacy">Financial Literacy</button>
-                    <button class="btn btn-secondary" data-filter="customization">Customization</button>
-                    <button class="btn btn-secondary" data-filter="student-experience">Student Exp</button>
-                    <button class="btn btn-secondary" data-filter="teacher-experience">Teacher Exp</button>
-                </div>
+                <select class="filter-select" id="enhCategoryFilter">
+                    <option value="all">All Categories</option>
+                    <option value="ux-ui">UX/UI</option>
+                    <option value="financial-literacy">Financial Literacy</option>
+                    <option value="customization">Customization</option>
+                    <option value="student-experience">Student Experience</option>
+                    <option value="teacher-experience">Teacher Experience</option>
+                    <option value="admin-school">Admin/School</option>
+                    <option value="integrations">Integrations</option>
+                </select>
+                <select class="filter-select" id="enhPhaseFilter">
+                    <option value="all">All Phases</option>
+                    <option value="In Development">In Development</option>
+                    <option value="On Deck">On Deck</option>
+                    <option value="Idea Phase">Idea Phase</option>
+                    <option value="Blocked">Blocked</option>
+                    <option value="Completed">Completed</option>
+                </select>
             </div>
 
             <button class="btn btn-primary" id="addEnhBtn">+ Add Enhancement</button>
@@ -1318,10 +1404,9 @@
                         <tr>
                             <th class="sortable" data-sort="feature">Feature</th>
                             <th class="sortable" data-sort="category">Category</th>
-                            <th class="sortable" data-sort="timesRequested">Times Requested</th>
+                            <th>Upvotes</th>
                             <th class="sortable" data-sort="roadmapPhase">Roadmap Phase</th>
-                            <th>Sample Details</th>
-                            <th class="sortable" data-sort="upvotes">Upvotes</th>
+                            <th>Details / Use Cases</th>
                             <th>Related</th>
                             <th>Actions</th>
                         </tr>
@@ -1555,7 +1640,13 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Roadmap Phase</label>
-                        <input type="text" id="enhRoadmapPhase" class="edit-input" placeholder="e.g., Q2 2026">
+                        <select id="enhRoadmapPhase" class="edit-select">
+                            <option value="Idea Phase">Idea Phase</option>
+                            <option value="On Deck">On Deck</option>
+                            <option value="In Development">In Development</option>
+                            <option value="Blocked">Blocked</option>
+                            <option value="Completed">Completed</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-row full">
@@ -1623,16 +1714,16 @@
             ];
 
             data.enhancements = [
-                { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', timesRequested: 20, upvotes: 12, roadmapPhase: 'Q2 2026', sampleDetails: 'Mobile app for iOS and Android platforms', relatedBugs: ['BUG-007'], relatedDev: [], relatedRoadmap: ['FEAT-001'] },
-                { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', timesRequested: 13, upvotes: 8, roadmapPhase: 'Future', sampleDetails: 'Create student groups for bulk operations', relatedBugs: [], relatedDev: [], relatedRoadmap: ['FEAT-005'] },
-                { id: 'ENH-003', feature: 'Print usernames', category: 'teacher-experience', timesRequested: 8, upvotes: 3, roadmapPhase: '', sampleDetails: 'Ability to print student username list', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-004', feature: 'Math off for store', category: 'customization', timesRequested: 6, upvotes: 5, roadmapPhase: '', sampleDetails: 'Option to disable math/calculations in store', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-005', feature: 'Teacher Shops for Student', category: 'ux-ui', timesRequested: 6, upvotes: 4, roadmapPhase: '', sampleDetails: 'Allow teachers to make purchases on behalf of students', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-006', feature: 'Debit Cards', category: 'financial-literacy', timesRequested: 5, upvotes: 2, roadmapPhase: '', sampleDetails: 'Prepaid debit cards for student transactions', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-007', feature: 'Custom Store Themes', category: 'customization', timesRequested: 4, upvotes: 3, roadmapPhase: '', sampleDetails: 'Customizable themes for school stores', relatedBugs: ['BUG-011'], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-008', feature: 'Parent Portal Access', category: 'admin-school', timesRequested: 7, upvotes: 6, roadmapPhase: 'Q3 2026', sampleDetails: 'Parent accounts to view student activity', relatedBugs: [], relatedDev: ['DEV-006'], relatedRoadmap: ['FEAT-003'] },
-                { id: 'ENH-009', feature: 'Automated Savings Goals', category: 'financial-literacy', timesRequested: 3, upvotes: 2, roadmapPhase: '', sampleDetails: 'Students set and track savings goals', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-010', feature: 'Classroom Leaderboard', category: 'student-experience', timesRequested: 9, upvotes: 7, roadmapPhase: 'Backlog', sampleDetails: 'Gamified leaderboard for classroom engagement', relatedBugs: [], relatedDev: ['DEV-007'], relatedRoadmap: ['FEAT-008'] }
+                { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', timesRequested: 20, upvotes: 12, roadmapPhase: 'In Development', sampleDetails: 'Mobile app for iOS and Android platforms', relatedBugs: ['BUG-007'], relatedDev: [], relatedRoadmap: ['FEAT-001'] },
+                { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', timesRequested: 13, upvotes: 8, roadmapPhase: 'On Deck', sampleDetails: 'Create student groups for bulk operations', relatedBugs: [], relatedDev: [], relatedRoadmap: ['FEAT-005'] },
+                { id: 'ENH-003', feature: 'Print usernames', category: 'teacher-experience', timesRequested: 8, upvotes: 3, roadmapPhase: 'Idea Phase', sampleDetails: 'Ability to print student username list', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-004', feature: 'Math off for store', category: 'customization', timesRequested: 6, upvotes: 5, roadmapPhase: 'Idea Phase', sampleDetails: 'Option to disable math/calculations in store', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-005', feature: 'Teacher Shops for Student', category: 'ux-ui', timesRequested: 6, upvotes: 4, roadmapPhase: 'Idea Phase', sampleDetails: 'Allow teachers to make purchases on behalf of students', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-006', feature: 'Debit Cards', category: 'financial-literacy', timesRequested: 5, upvotes: 2, roadmapPhase: 'Idea Phase', sampleDetails: 'Prepaid debit cards for student transactions', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-007', feature: 'Custom Store Themes', category: 'customization', timesRequested: 4, upvotes: 3, roadmapPhase: 'Idea Phase', sampleDetails: 'Customizable themes for school stores', relatedBugs: ['BUG-011'], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-008', feature: 'Parent Portal Access', category: 'admin-school', timesRequested: 7, upvotes: 6, roadmapPhase: 'On Deck', sampleDetails: 'Parent accounts to view student activity', relatedBugs: [], relatedDev: ['DEV-006'], relatedRoadmap: ['FEAT-003'] },
+                { id: 'ENH-009', feature: 'Automated Savings Goals', category: 'financial-literacy', timesRequested: 3, upvotes: 2, roadmapPhase: 'Idea Phase', sampleDetails: 'Students set and track savings goals', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-010', feature: 'Classroom Leaderboard', category: 'student-experience', timesRequested: 9, upvotes: 7, roadmapPhase: 'Completed', sampleDetails: 'Gamified leaderboard for classroom engagement', relatedBugs: [], relatedDev: ['DEV-007'], relatedRoadmap: ['FEAT-008'] }
             ];
 
             data.roadmap = [
@@ -1665,228 +1756,117 @@
         }
 
         // ============ RENDER FUNCTIONS ============
-        function renderBugTable(filter = 'all', searchTerm = '') {
+        function renderBugTable() {
             const tbody = document.getElementById('bugsTableBody');
             tbody.innerHTML = '';
-
+            const searchTerm = document.getElementById('bugSearch').value.toLowerCase();
+            const typeFilter = document.getElementById('bugTypeFilter').value;
+            const priorityFilter = document.getElementById('bugPriorityFilter').value;
+            const statusFilter = document.getElementById('bugStatusFilter').value;
             let bugs = data.bugs;
-
-            // Filter by priority/status
-            if (filter !== 'all') {
-                if (['high', 'medium', 'low'].includes(filter)) {
-                    bugs = bugs.filter(b => b.priority === filter);
-                } else if (filter === 'resolved') {
-                    bugs = bugs.filter(b => b.status === 'resolved');
-                }
-            }
-
-            // Filter by search
-            if (searchTerm) {
-                bugs = bugs.filter(b => b.title.toLowerCase().includes(searchTerm.toLowerCase()));
-            }
-
+            if (typeFilter !== 'all') bugs = bugs.filter(b => b.type === typeFilter);
+            if (priorityFilter !== 'all') bugs = bugs.filter(b => b.priority === priorityFilter);
+            if (statusFilter !== 'all') bugs = bugs.filter(b => b.status === statusFilter);
+            if (searchTerm) bugs = bugs.filter(b => b.title.toLowerCase().includes(searchTerm));
             if (bugs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No bugs found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No bugs found</td></tr>';
                 return;
             }
-
             bugs.forEach(bug => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="editable" data-id="${bug.id}" data-field="title">${bug.title}</td>
-                    <td class="editable" data-id="${bug.id}" data-field="type"><span class="pill pill-${bug.type}">${bug.type}</span></td>
-                    <td class="editable" data-id="${bug.id}" data-field="priority"><span class="pill pill-${bug.priority}">${bug.priority}</span></td>
-                    <td class="editable" data-id="${bug.id}" data-field="status"><span class="pill pill-${bug.status}">${bug.status}</span></td>
-                    <td class="editable" data-id="${bug.id}" data-field="dateOpened">${bug.dateOpened}</td>
-                    <td><a href="${bug.slackThread}" target="_blank" style="color: var(--primary-blue); text-decoration: none;">${bug.slackThread ? '🔗' : '-'}</a></td>
-                    <td style="font-size: 11px;">${renderRelatedPills(bug)}</td>
-                    <td>
-                        <button class="btn-icon" onclick="editBug('${bug.id}')">✎</button>
-                        <button class="btn-icon" onclick="deleteBug('${bug.id}')" style="color: var(--red);">🗑</button>
-                    </td>
-                `;
+                row.innerHTML = '<td class="editable" data-id="' + bug.id + '" data-field="title"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + bug.id + '</span>' + bug.title + '</td><td class="editable" data-id="' + bug.id + '" data-field="type"><span class="pill pill-' + bug.type + '">' + bug.type + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="priority"><span class="pill pill-' + bug.priority + '">' + bug.priority + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="status"><span class="pill pill-' + bug.status + '">' + bug.status + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="dateOpened">' + bug.dateOpened + '</td><td>' + (bug.slackThread ? '<a href="' + bug.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(bug) + '</td><td><button class="btn-icon" onclick="editBug(\'' + bug.id + '\')">✎</button><button class="btn-icon" onclick="deleteBug(\'' + bug.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
-
             attachEditableListeners();
         }
 
-        function renderDevTable(searchTerm = '') {
+        function renderDevTable() {
             const tbody = document.getElementById('devTableBody');
             tbody.innerHTML = '';
-
+            const searchTerm = document.getElementById('devSearch').value.toLowerCase();
+            const priorityFilter = document.getElementById('devPriorityFilter').value;
+            const statusFilter = document.getElementById('devStatusFilter').value;
             let items = data.devQueue;
-
-            if (searchTerm) {
-                items = items.filter(d => d.item.toLowerCase().includes(searchTerm.toLowerCase()));
-            }
-
+            if (priorityFilter !== 'all') items = items.filter(d => d.priority === priorityFilter);
+            if (statusFilter !== 'all') items = items.filter(d => d.status === statusFilter);
+            if (searchTerm) items = items.filter(d => d.item.toLowerCase().includes(searchTerm));
             if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No dev items found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No dev items found</td></tr>';
                 return;
             }
-
             items.forEach(item => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="editable" data-id="${item.id}" data-field="item">${item.item}</td>
-                    <td class="editable" data-id="${item.id}" data-field="priority"><span class="pill pill-${item.priority}">${item.priority}</span></td>
-                    <td class="editable" data-id="${item.id}" data-field="status"><span class="pill pill-${item.status}">${item.status}</span></td>
-                    <td class="editable" data-id="${item.id}" data-field="backendHrs">${item.backendHrs}</td>
-                    <td class="editable" data-id="${item.id}" data-field="frontendHrs">${item.frontendHrs}</td>
-                    <td><a href="${item.slackThread}" target="_blank" style="color: var(--primary-blue); text-decoration: none;">${item.slackThread ? '🔗' : '-'}</a></td>
-                    <td style="font-size: 11px;">${renderRelatedPills(item)}</td>
-                    <td>
-                        <button class="btn-icon" onclick="editDevItem('${item.id}')">✎</button>
-                        <button class="btn-icon" onclick="deleteDevItem('${item.id}')" style="color: var(--red);">🗑</button>
-                    </td>
-                `;
+                row.innerHTML = '<td class="editable" data-id="' + item.id + '" data-field="item"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + item.id + '</span>' + item.item + '</td><td class="editable" data-id="' + item.id + '" data-field="priority"><span class="pill pill-' + item.priority + '">' + item.priority + '</span></td><td class="editable" data-id="' + item.id + '" data-field="status"><span class="pill pill-' + item.status + '">' + item.status + '</span></td><td class="editable" data-id="' + item.id + '" data-field="backendHrs">' + item.backendHrs + '</td><td class="editable" data-id="' + item.id + '" data-field="frontendHrs">' + item.frontendHrs + '</td><td>' + (item.slackThread ? '<a href="' + item.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(item) + '</td><td><button class="btn-icon" onclick="editDevItem(\'' + item.id + '\')">✎</button><button class="btn-icon" onclick="deleteDevItem(\'' + item.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
-
             attachEditableListeners();
             updateDevSummary();
         }
 
-        function renderEnhancementsTable(filter = 'all', searchTerm = '') {
+        function renderEnhancementsTable() {
             const tbody = document.getElementById('enhancementsTableBody');
             tbody.innerHTML = '';
-
+            const searchTerm = document.getElementById('enhSearch').value.toLowerCase();
+            const categoryFilter = document.getElementById('enhCategoryFilter').value;
+            const phaseFilter = document.getElementById('enhPhaseFilter').value;
             let items = data.enhancements;
-
-            if (filter !== 'all') {
-                items = items.filter(e => e.category === filter);
-            }
-
-            if (searchTerm) {
-                items = items.filter(e => e.feature.toLowerCase().includes(searchTerm.toLowerCase()));
-            }
-
+            if (categoryFilter !== 'all') items = items.filter(e => e.category === categoryFilter);
+            if (phaseFilter !== 'all') items = items.filter(e => e.roadmapPhase === phaseFilter);
+            if (searchTerm) items = items.filter(e => e.feature.toLowerCase().includes(searchTerm));
             if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--gray);">No enhancements found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No enhancements found</td></tr>';
                 return;
             }
-
             items.forEach(enh => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="editable" data-id="${enh.id}" data-field="feature">${enh.feature}</td>
-                    <td class="editable" data-id="${enh.id}" data-field="category"><span class="pill pill-${enh.category}">${enh.category.replace('-', ' ')}</span></td>
-                    <td class="editable" data-id="${enh.id}" data-field="timesRequested">${enh.timesRequested}</td>
-                    <td class="editable" data-id="${enh.id}" data-field="roadmapPhase">${enh.roadmapPhase || '-'}</td>
-                    <td><button class="btn btn-small" onclick="showEnhDetails('${enh.id}')">View</button></td>
-                    <td style="text-align: center;">
-                        <button class="btn-icon" onclick="upvoteEnhancement('${enh.id}')" title="Upvote">👍</button>
-                        <span style="font-weight: 700; color: var(--dark-text);">${enh.upvotes}</span>
-                    </td>
-                    <td style="font-size: 11px;">${renderRelatedPills(enh)}</td>
-                    <td>
-                        <button class="btn-icon" onclick="editEnhancement('${enh.id}')">✎</button>
-                        <button class="btn-icon" onclick="deleteEnhancement('${enh.id}')" style="color: var(--red);">🗑</button>
-                    </td>
-                `;
+                row.innerHTML = '<td class="editable" data-id="' + enh.id + '" data-field="feature"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + enh.id + '</span>' + enh.feature + '</td><td class="editable" data-id="' + enh.id + '" data-field="category"><span class="pill pill-' + enh.category + '">' + enh.category.replace(/-/g,' ') + '</span></td><td style="text-align:center;"><button class="btn-icon" onclick="upvoteEnhancement(\'' + enh.id + '\')" title="Upvote">👍</button><span style="font-weight:700;">' + enh.upvotes + '</span></td><td class="editable" data-id="' + enh.id + '" data-field="roadmapPhase"><span class="pill pill-' + (enh.roadmapPhase||'').toLowerCase().replace(/\s+/g,'-') + '">' + (enh.roadmapPhase || 'Idea Phase') + '</span></td><td><button class="btn btn-small" onclick="editEnhancement(\'' + enh.id + '\')">View</button></td><td style="font-size:11px;">' + renderRelatedPills(enh) + '</td><td><button class="btn-icon" onclick="editEnhancement(\'' + enh.id + '\')">✎</button><button class="btn-icon" onclick="deleteEnhancement(\'' + enh.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
-
             attachEditableListeners();
         }
 
         function renderRoadmapKanban() {
             const kanban = document.getElementById('roadmapKanban');
             kanban.innerHTML = '';
-
-            const phases = ['Backlog', 'Q2 2026', 'Q3 2026', 'Future'];
-
+            const phases = ['In Development', 'On Deck', 'Idea Phase', 'Blocked', 'Completed'];
             phases.forEach(phase => {
-                const items = data.roadmap.filter(r => r.phase === phase);
+                const items = data.enhancements.filter(e => e.roadmapPhase === phase);
                 const column = document.createElement('div');
                 column.className = 'kanban-column';
                 column.setAttribute('data-phase', phase);
-
                 const header = document.createElement('div');
                 header.className = 'kanban-header';
-                header.innerHTML = `<span>${phase}</span><span class="kanban-count">${items.length}</span>`;
+                header.innerHTML = '<span>' + phase + '</span><span class="kanban-count">' + items.length + '</span>';
                 column.appendChild(header);
-
                 const cardsContainer = document.createElement('div');
                 cardsContainer.className = 'kanban-cards';
                 cardsContainer.setAttribute('data-phase', phase);
-
-                // Drop zone events
-                cardsContainer.addEventListener('dragover', function(e) {
-                    e.preventDefault();
-                    this.classList.add('drag-over');
-                });
-                cardsContainer.addEventListener('dragleave', function(e) {
-                    this.classList.remove('drag-over');
-                });
+                cardsContainer.addEventListener('dragover', function(e) { e.preventDefault(); this.style.backgroundColor = 'rgba(78,116,255,0.08)'; });
+                cardsContainer.addEventListener('dragleave', function() { this.style.backgroundColor = ''; });
                 cardsContainer.addEventListener('drop', function(e) {
                     e.preventDefault();
-                    this.classList.remove('drag-over');
-                    const featId = e.dataTransfer.getData('text/plain');
+                    this.style.backgroundColor = '';
+                    const enhId = e.dataTransfer.getData('text/plain');
                     const targetPhase = this.getAttribute('data-phase');
-                    const feat = data.roadmap.find(f => f.id === featId);
-                    if (feat) {
-                        feat.phase = targetPhase;
+                    const enh = data.enhancements.find(x => x.id === enhId);
+                    if (enh && enh.roadmapPhase !== targetPhase) {
+                        enh.roadmapPhase = targetPhase;
                         saveData();
                         renderRoadmapKanban();
-                        showToast(`Moved to ${targetPhase}`, 'success');
+                        renderEnhancementsTable();
+                        showToast('Moved ' + enh.feature + ' to ' + targetPhase, 'success');
                     }
                 });
-
-                items.forEach(item => {
+                items.forEach(enh => {
                     const card = document.createElement('div');
                     card.className = 'kanban-card';
                     card.draggable = true;
-                    card.setAttribute('data-id', item.id);
-                    card.style.borderLeftColor = 'var(--orange)';
-
-                    // Related enhancement pills
-                    let relatedHtml = '';
-                    if (item.relatedEnhancements && item.relatedEnhancements.length > 0) {
-                        relatedHtml = '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;">' +
-                            item.relatedEnhancements.map(eid => `<span class="related-pill related-pill-enh" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editEnhancement('${eid}')">${eid}</span>`).join('') +
-                            '</div>';
-                    }
-                    if (item.relatedDev && item.relatedDev.length > 0) {
-                        relatedHtml += '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">' +
-                            item.relatedDev.map(did => `<span class="related-pill related-pill-dev" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editDevItem('${did}')">${did}</span>`).join('') +
-                            '</div>';
-                    }
-                    if (item.relatedBugs && item.relatedBugs.length > 0) {
-                        relatedHtml += '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">' +
-                            item.relatedBugs.map(bid => `<span class="related-pill related-pill-bug" style="font-size:10px;padding:2px 6px;" onclick="event.stopPropagation();editBug('${bid}')">${bid}</span>`).join('') +
-                            '</div>';
-                    }
-
-                    card.innerHTML = `
-                        <div class="kanban-card-title">${item.feature}</div>
-                        <div class="kanban-card-meta"><span class="pill pill-${item.status}">${item.status}</span></div>
-                        ${relatedHtml}
-                    `;
-
-                    // Click to open linked enhancement if exists
-                    card.addEventListener('click', function() {
-                        if (item.relatedEnhancements && item.relatedEnhancements.length > 0) {
-                            editEnhancement(item.relatedEnhancements[0]);
-                        } else {
-                            showToast(`${item.feature} - ${item.status} (${item.phase})`, 'info');
-                        }
-                    });
-
-                    // Drag events
-                    card.addEventListener('dragstart', function(e) {
-                        e.dataTransfer.setData('text/plain', item.id);
-                        this.style.opacity = '0.5';
-                    });
-                    card.addEventListener('dragend', function() {
-                        this.style.opacity = '1';
-                        document.querySelectorAll('.kanban-cards').forEach(c => c.classList.remove('drag-over'));
-                    });
-
+                    card.innerHTML = '<div class="kanban-card-title">' + enh.feature + '</div><div class="kanban-card-meta"><span class="pill pill-' + enh.category + '">' + enh.category.replace(/-/g,' ') + '</span> <span style="margin-left:6px;font-weight:700;">' + enh.upvotes + ' votes</span></div>';
+                    card.addEventListener('click', function() { editEnhancement(enh.id); });
+                    card.addEventListener('dragstart', function(e) { e.dataTransfer.setData('text/plain', enh.id); this.style.opacity = '0.5'; });
+                    card.addEventListener('dragend', function() { this.style.opacity = '1'; });
                     cardsContainer.appendChild(card);
                 });
-
                 column.appendChild(cardsContainer);
                 kanban.appendChild(column);
             });
@@ -2006,20 +1986,14 @@
         function attachEditableListeners() {
             document.querySelectorAll('td.editable').forEach(cell => {
                 cell.setAttribute('tabindex', '0');
-                // Single click = select
+                // Single click = start edit
                 cell.addEventListener('click', function(e) {
-                    document.querySelectorAll('td.editable.selected').forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-                // Double click = edit
-                cell.addEventListener('dblclick', function() {
-                    const id = this.getAttribute('data-id');
-                    const field = this.getAttribute('data-field');
-                    startInlineEdit(id, field, this);
+                    if (this.querySelector('input,select')) return;
+                    startInlineEdit(this.getAttribute('data-id'), this.getAttribute('data-field'), this);
                 });
                 // Enter on selected = start edit
                 cell.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' && this.classList.contains('selected') && !this.querySelector('input, select')) {
+                    if (e.key === 'Enter' && !this.querySelector('input, select')) {
                         e.preventDefault();
                         startInlineEdit(this.getAttribute('data-id'), this.getAttribute('data-field'), this);
                     }
@@ -2035,7 +2009,7 @@
             if (!item) return;
 
             let input;
-            if (['type', 'priority', 'status', 'category'].includes(field)) {
+            if (['type', 'priority', 'status', 'category', 'roadmapPhase'].includes(field)) {
                 input = document.createElement('select');
                 input.className = 'edit-select';
                 let options = [];
@@ -2045,6 +2019,7 @@
                 else if (field === 'status' && type === 'bug') options = ['review', 'momentum', 'progress', 'resolved'];
                 else if (field === 'status' && type === 'dev') options = ['not-started', 'progress', 'review', 'blocked', 'deployed'];
                 else if (field === 'category') options = ['ux-ui', 'financial-literacy', 'customization', 'student-experience', 'teacher-experience', 'admin-school', 'integrations'];
+                else if (field === 'roadmapPhase') options = ['In Development', 'On Deck', 'Idea Phase', 'Blocked', 'Completed'];
                 options.forEach(opt => {
                     const o = document.createElement('option');
                     o.value = opt; o.textContent = opt.replace(/-/g, ' ');
@@ -2071,7 +2046,7 @@
                 saveData();
                 if (type === 'bug') renderBugTable();
                 else if (type === 'dev') { renderDevTable(); updateDevSummary(); }
-                else if (type === 'enh') renderEnhancementsTable();
+                else if (type === 'enh') { renderEnhancementsTable(); if (field === 'roadmapPhase') renderRoadmapKanban(); }
                 showToast('Updated!', 'success');
             }
 
@@ -2334,37 +2309,20 @@
 
         // ============ SEARCH & FILTER ============
         function setupSearchAndFilter() {
-            document.getElementById('bugSearch').addEventListener('input', (e) => {
-                const activeFilter = document.querySelector('#bugFilters .btn-secondary.active').getAttribute('data-filter');
-                renderBugTable(activeFilter, e.target.value);
-            });
-
-            document.querySelectorAll('#bugFilters .btn-secondary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#bugFilters .btn-secondary').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const searchTerm = document.getElementById('bugSearch').value;
-                    renderBugTable(this.getAttribute('data-filter'), searchTerm);
-                });
-            });
-
-            document.getElementById('devSearch').addEventListener('input', (e) => {
-                renderDevTable(e.target.value);
-            });
-
-            document.getElementById('enhSearch').addEventListener('input', (e) => {
-                const activeFilter = document.querySelector('#enhFilters .btn-secondary.active')?.getAttribute('data-filter') || 'all';
-                renderEnhancementsTable(activeFilter, e.target.value);
-            });
-
-            document.querySelectorAll('#enhFilters .btn-secondary').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#enhFilters .btn-secondary').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const searchTerm = document.getElementById('enhSearch').value;
-                    renderEnhancementsTable(this.getAttribute('data-filter'), searchTerm);
-                });
-            });
+            // Bug search
+            document.getElementById('bugSearch').addEventListener('input', function() { renderBugTable(); });
+            // Bug filter dropdowns
+            document.getElementById('bugTypeFilter').addEventListener('change', function() { renderBugTable(); });
+            document.getElementById('bugPriorityFilter').addEventListener('change', function() { renderBugTable(); });
+            document.getElementById('bugStatusFilter').addEventListener('change', function() { renderBugTable(); });
+            // Dev search + filters
+            document.getElementById('devSearch').addEventListener('input', function() { renderDevTable(); });
+            document.getElementById('devPriorityFilter').addEventListener('change', function() { renderDevTable(); });
+            document.getElementById('devStatusFilter').addEventListener('change', function() { renderDevTable(); });
+            // Enhancement search + filters
+            document.getElementById('enhSearch').addEventListener('input', function() { renderEnhancementsTable(); });
+            document.getElementById('enhCategoryFilter').addEventListener('change', function() { renderEnhancementsTable(); });
+            document.getElementById('enhPhaseFilter').addEventListener('change', function() { renderEnhancementsTable(); });
         }
 
         let activeDevFilter = null;
