@@ -595,6 +595,44 @@
             color: var(--green);
         }
 
+        .pill-staging {
+            background-color: #fef3c7;
+            color: #ca8a04;
+        }
+
+        /* FILTER TAGS */
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background-color: #e8ecff;
+            color: #4E74FF;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .filter-tag .remove-tag {
+            cursor: pointer;
+            font-weight: 800;
+            margin-left: 2px;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        .filter-tag .remove-tag:hover {
+            opacity: 1;
+            color: #ef4444;
+        }
+
         /* TABLES */
         .table-container {
             overflow: auto;
@@ -1249,7 +1287,6 @@
                             <tr>
                                 <th>Feature</th>
                                 <th>Category</th>
-                                <th>Requested</th>
                                 <th>Upvotes</th>
                             </tr>
                         </thead>
@@ -1285,8 +1322,45 @@
                     <option value="progress">Fix in Progress</option>
                     <option value="blocked">Blocked</option>
                     <option value="resolved">Resolved</option>
+                    <option value="staging">On Staging</option>
+                </select>
+                <select class="filter-select" id="bugDateOpenedFilter">
+                    <option value="all">All Dates (Opened)</option>
+                    <option value="this-month">This Month</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+                <select class="filter-select" id="bugDateResolvedFilter">
+                    <option value="all">All Dates (Resolved)</option>
+                    <option value="this-month">This Month</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="custom">Custom Range</option>
                 </select>
             </div>
+
+            <!-- Custom date range inputs (hidden by default) -->
+            <div id="bugDateOpenedCustom" style="display:none;margin-bottom:12px;">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <span style="font-size:12px;font-weight:600;color:var(--gray);">Opened from:</span>
+                    <input type="date" id="bugDateOpenedFrom" class="edit-input" style="width:auto;padding:6px 10px;font-size:12px;">
+                    <span style="font-size:12px;font-weight:600;color:var(--gray);">to:</span>
+                    <input type="date" id="bugDateOpenedTo" class="edit-input" style="width:auto;padding:6px 10px;font-size:12px;">
+                    <button class="btn btn-primary btn-small" onclick="applyCustomDateFilter('dateOpened')">Apply</button>
+                    <button class="btn btn-secondary btn-small" onclick="cancelCustomDateFilter('dateOpened')">Cancel</button>
+                </div>
+            </div>
+            <div id="bugDateResolvedCustom" style="display:none;margin-bottom:12px;">
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <span style="font-size:12px;font-weight:600;color:var(--gray);">Resolved from:</span>
+                    <input type="date" id="bugDateResolvedFrom" class="edit-input" style="width:auto;padding:6px 10px;font-size:12px;">
+                    <span style="font-size:12px;font-weight:600;color:var(--gray);">to:</span>
+                    <input type="date" id="bugDateResolvedTo" class="edit-input" style="width:auto;padding:6px 10px;font-size:12px;">
+                    <button class="btn btn-primary btn-small" onclick="applyCustomDateFilter('dateResolved')">Apply</button>
+                    <button class="btn btn-secondary btn-small" onclick="cancelCustomDateFilter('dateResolved')">Cancel</button>
+                </div>
+            </div>
+
+            <div class="filter-tags" id="bugsFilterTags"></div>
 
             <button class="btn btn-primary" id="addBugBtn">+ Add Bug</button>
 
@@ -1299,7 +1373,9 @@
                             <th class="sortable" data-sort="priority">Priority</th>
                             <th class="sortable" data-sort="status">Status</th>
                             <th class="sortable" data-sort="dateOpened">Date Opened</th>
+                            <th class="sortable" data-sort="dateResolved">Date Resolved</th>
                             <th>Slack Thread</th>
+                            <th>Jam</th>
                             <th>Related</th>
                             <th>Actions</th>
                         </tr>
@@ -1345,8 +1421,11 @@
                     <option value="progress">In Progress</option>
                     <option value="blocked">Blocked</option>
                     <option value="deployed">Deployed</option>
+                    <option value="staging">On Staging</option>
                 </select>
             </div>
+
+            <div class="filter-tags" id="devFilterTags"></div>
 
             <button class="btn btn-primary" id="addDevBtn">+ Add Dev Item</button>
 
@@ -1360,6 +1439,7 @@
                             <th class="sortable" data-sort="backendHrs">Backend Hrs</th>
                             <th class="sortable" data-sort="frontendHrs">Frontend Hrs</th>
                             <th>Slack Thread</th>
+                            <th>Jam</th>
                             <th>Related</th>
                             <th>Actions</th>
                         </tr>
@@ -1396,6 +1476,8 @@
                 </select>
             </div>
 
+            <div class="filter-tags" id="enhFilterTags"></div>
+
             <button class="btn btn-primary" id="addEnhBtn">+ Add Enhancement</button>
 
             <div class="table-container" style="margin-top: 20px;">
@@ -1406,6 +1488,8 @@
                             <th class="sortable" data-sort="category">Category</th>
                             <th>Upvotes</th>
                             <th class="sortable" data-sort="roadmapPhase">Roadmap Phase</th>
+                            <th>Slack Thread</th>
+                            <th>Jam</th>
                             <th>Details / Use Cases</th>
                             <th>Related</th>
                             <th>Actions</th>
@@ -1495,6 +1579,7 @@
                             <option value="review">Review</option>
                             <option value="momentum">Momentum</option>
                             <option value="progress">Progress</option>
+                            <option value="staging">Staging</option>
                             <option value="resolved">Resolved</option>
                         </select>
                     </div>
@@ -1513,6 +1598,12 @@
                     <div class="form-group">
                         <label class="form-label">Slack Thread Link</label>
                         <input type="text" id="bugSlackLink" class="edit-input" placeholder="https://...slack.com/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Jam Link</label>
+                        <input type="text" id="bugJamLink" class="edit-input" placeholder="https://jam.dev/...">
                     </div>
                 </div>
                 <div class="modal-row full">
@@ -1563,6 +1654,7 @@
                             <option value="progress">In Progress</option>
                             <option value="review">In Review</option>
                             <option value="blocked">Blocked</option>
+                            <option value="staging">Staging</option>
                             <option value="deployed">Deployed</option>
                         </select>
                     </div>
@@ -1581,6 +1673,12 @@
                     <div class="form-group">
                         <label class="form-label">Slack Thread Link</label>
                         <input type="text" id="devSlackThread" class="edit-input" placeholder="https://...slack.com/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Jam Link</label>
+                        <input type="text" id="devJamLink" class="edit-input" placeholder="https://jam.dev/...">
                     </div>
                 </div>
                 <div class="modal-row full">
@@ -1651,6 +1749,18 @@
                 </div>
                 <div class="modal-row full">
                     <div class="form-group">
+                        <label class="form-label">Slack Thread Link</label>
+                        <input type="text" id="enhSlackThread" class="edit-input" placeholder="https://...slack.com/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
+                        <label class="form-label">Jam Link</label>
+                        <input type="text" id="enhJamLink" class="edit-input" placeholder="https://jam.dev/...">
+                    </div>
+                </div>
+                <div class="modal-row full">
+                    <div class="form-group">
                         <label class="form-label">Sample Details</label>
                         <textarea id="enhSampleDetails" class="edit-input" placeholder="Sample details..." style="min-height: 100px; resize: vertical;"></textarea>
                     </div>
@@ -1683,47 +1793,54 @@
         let currentEditingId = null;
         let currentEditingType = null;
 
+        // ============ ACTIVE FILTERS ============
+        let activeFilters = {
+            bugs: {},
+            dev: {},
+            enh: {}
+        };
+
         // ============ DEMO DATA ============
         function initializeDemoData() {
             data.bugs = [
-                { id: 'BUG-001', title: 'Savings interest calculated incorrectly', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2025-11-15', dateResolved: '', slackThread: '', description: 'Interest calculation uses wrong timezone offset', relatedBugs: ['BUG-005'], relatedDev: ['DEV-003'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-002', title: 'Store page slow load (10s+)', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-01', dateResolved: '', slackThread: '', description: 'Store page takes 10+ seconds to load with many items', relatedBugs: ['BUG-006'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-003', title: 'Password reset email not sending', type: 'bug', priority: 'high', status: 'resolved', dateOpened: '2025-10-20', dateResolved: '2025-11-05', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-004', title: 'Report PDF generation fails for large classes', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-10', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: ['DEV-001'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
-                { id: 'BUG-005', title: 'Student balance shows negative after batch', type: 'bug', priority: 'medium', status: 'progress', dateOpened: '2026-01-15', dateResolved: '', slackThread: '', description: '', relatedBugs: ['BUG-001'], relatedDev: ['DEV-005'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-006', title: 'Teacher dashboard timeout on 500+ students', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-20', dateResolved: '', slackThread: '', description: '', relatedBugs: ['BUG-002'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-007', title: 'Mobile layout broken on student store', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-25', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-001'], relatedRoadmap: ['FEAT-001'] },
-                { id: 'BUG-008', title: 'Duplicate transactions on quick double-click', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2026-02-01', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: ['DEV-009'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-009', title: 'CSV export missing last column', type: 'bug', priority: 'low', status: 'review', dateOpened: '2026-02-05', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-010', title: 'Notification bell count incorrect', type: 'bug', priority: 'low', status: 'resolved', dateOpened: '2025-09-15', dateResolved: '2025-10-01', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'BUG-011', title: 'Search not returning partial matches', type: 'enhancement', priority: 'medium', status: 'review', dateOpened: '2026-02-10', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-007'], relatedRoadmap: [] },
-                { id: 'BUG-012', title: 'Auto-save drafts not persisting', type: 'bug', priority: 'medium', status: 'momentum', dateOpened: '2026-02-15', dateResolved: '', slackThread: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] }
+                { id: 'BUG-001', title: 'Savings interest calculated incorrectly', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2025-11-15', dateResolved: '', slackThread: '', jamLink: '', description: 'Interest calculation uses wrong timezone offset', relatedBugs: ['BUG-005'], relatedDev: ['DEV-003'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-002', title: 'Store page slow load (10s+)', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-01', dateResolved: '', slackThread: '', jamLink: '', description: 'Store page takes 10+ seconds to load with many items', relatedBugs: ['BUG-006'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-003', title: 'Password reset email not sending', type: 'bug', priority: 'high', status: 'resolved', dateOpened: '2025-10-20', dateResolved: '2025-11-05', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-004', title: 'Report PDF generation fails for large classes', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-10', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: ['DEV-001'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
+                { id: 'BUG-005', title: 'Student balance shows negative after batch', type: 'bug', priority: 'medium', status: 'progress', dateOpened: '2026-01-15', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: ['BUG-001'], relatedDev: ['DEV-005'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-006', title: 'Teacher dashboard timeout on 500+ students', type: 'performance', priority: 'high', status: 'momentum', dateOpened: '2025-12-20', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: ['BUG-002'], relatedDev: ['DEV-004'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-007', title: 'Mobile layout broken on student store', type: 'bug', priority: 'medium', status: 'review', dateOpened: '2026-01-25', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-001'], relatedRoadmap: ['FEAT-001'] },
+                { id: 'BUG-008', title: 'Duplicate transactions on quick double-click', type: 'bug', priority: 'high', status: 'progress', dateOpened: '2026-02-01', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: ['DEV-009'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-009', title: 'CSV export missing last column', type: 'bug', priority: 'low', status: 'review', dateOpened: '2026-02-05', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-010', title: 'Notification bell count incorrect', type: 'bug', priority: 'low', status: 'resolved', dateOpened: '2025-09-15', dateResolved: '2025-10-01', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'BUG-011', title: 'Search not returning partial matches', type: 'enhancement', priority: 'medium', status: 'review', dateOpened: '2026-02-10', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: ['ENH-007'], relatedRoadmap: [] },
+                { id: 'BUG-012', title: 'Auto-save drafts not persisting', type: 'bug', priority: 'medium', status: 'momentum', dateOpened: '2026-02-15', dateResolved: '', slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedDev: [], relatedEnhancements: [], relatedRoadmap: [] }
             ];
 
             data.devQueue = [
-                { id: 'DEV-001', item: 'Report generation system (AWS S3)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 8, slackThread: '', description: 'Build comprehensive report generation using AWS S3 storage', relatedBugs: ['BUG-004'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
-                { id: 'DEV-002', item: 'Teacher matching from RosterStream', priority: 'p1', status: 'progress', backendHrs: 24, frontendHrs: 0, slackThread: '', description: 'Implement teacher matching from RosterStream API', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-003', item: 'Fix savings interest timezone bug', priority: 'p1', status: 'not-started', backendHrs: 4, frontendHrs: 0, slackThread: '', description: 'Fix timezone calculation issue in interest payment system', relatedBugs: ['BUG-001'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-004', item: 'Query optimization (10s+ load times)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 0, slackThread: '', description: 'Optimize database queries causing slow page loads', relatedBugs: ['BUG-002', 'BUG-006'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-005', item: 'Force refresh balance after batch action', priority: 'p1', status: 'progress', backendHrs: 8, frontendHrs: 8, slackThread: '', description: 'Implement real-time balance refresh after bulk actions', relatedBugs: ['BUG-005'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-006', item: 'Admin Panel for Schools', priority: 'p2', status: 'not-started', backendHrs: 24, frontendHrs: 24, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-008'], relatedRoadmap: ['FEAT-002'] },
-                { id: 'DEV-007', item: 'Student portfolio & badges', priority: 'p2', status: 'blocked', backendHrs: 16, frontendHrs: 16, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-010'], relatedRoadmap: ['FEAT-008'] },
-                { id: 'DEV-008', item: 'RosterStream integration complete', priority: 'p1', status: 'deployed', backendHrs: 16, frontendHrs: 8, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-009', item: 'Bulk action confirmation dialog', priority: 'p1', status: 'review', backendHrs: 4, frontendHrs: 8, slackThread: '', description: '', relatedBugs: ['BUG-008'], relatedEnhancements: [], relatedRoadmap: [] },
-                { id: 'DEV-010', item: 'Performance monitoring dashboard', priority: 'p3', status: 'not-started', backendHrs: 8, frontendHrs: 16, slackThread: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] }
+                { id: 'DEV-001', item: 'Report generation system (AWS S3)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 8, slackThread: '', jamLink: '', description: 'Build comprehensive report generation using AWS S3 storage', relatedBugs: ['BUG-004'], relatedEnhancements: [], relatedRoadmap: ['FEAT-004'] },
+                { id: 'DEV-002', item: 'Teacher matching from RosterStream', priority: 'p1', status: 'progress', backendHrs: 24, frontendHrs: 0, slackThread: '', jamLink: '', description: 'Implement teacher matching from RosterStream API', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-003', item: 'Fix savings interest timezone bug', priority: 'p1', status: 'not-started', backendHrs: 4, frontendHrs: 0, slackThread: '', jamLink: '', description: 'Fix timezone calculation issue in interest payment system', relatedBugs: ['BUG-001'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-004', item: 'Query optimization (10s+ load times)', priority: 'p1', status: 'not-started', backendHrs: 24, frontendHrs: 0, slackThread: '', jamLink: '', description: 'Optimize database queries causing slow page loads', relatedBugs: ['BUG-002', 'BUG-006'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-005', item: 'Force refresh balance after batch action', priority: 'p1', status: 'progress', backendHrs: 8, frontendHrs: 8, slackThread: '', jamLink: '', description: 'Implement real-time balance refresh after bulk actions', relatedBugs: ['BUG-005'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-006', item: 'Admin Panel for Schools', priority: 'p2', status: 'not-started', backendHrs: 24, frontendHrs: 24, slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-008'], relatedRoadmap: ['FEAT-002'] },
+                { id: 'DEV-007', item: 'Student portfolio & badges', priority: 'p2', status: 'blocked', backendHrs: 16, frontendHrs: 16, slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedEnhancements: ['ENH-010'], relatedRoadmap: ['FEAT-008'] },
+                { id: 'DEV-008', item: 'RosterStream integration complete', priority: 'p1', status: 'deployed', backendHrs: 16, frontendHrs: 8, slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-009', item: 'Bulk action confirmation dialog', priority: 'p1', status: 'review', backendHrs: 4, frontendHrs: 8, slackThread: '', jamLink: '', description: '', relatedBugs: ['BUG-008'], relatedEnhancements: [], relatedRoadmap: [] },
+                { id: 'DEV-010', item: 'Performance monitoring dashboard', priority: 'p3', status: 'not-started', backendHrs: 8, frontendHrs: 16, slackThread: '', jamLink: '', description: '', relatedBugs: [], relatedEnhancements: [], relatedRoadmap: [] }
             ];
 
             data.enhancements = [
-                { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', timesRequested: 20, upvotes: 12, roadmapPhase: 'In Development', sampleDetails: 'Mobile app for iOS and Android platforms', relatedBugs: ['BUG-007'], relatedDev: [], relatedRoadmap: ['FEAT-001'] },
-                { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', timesRequested: 13, upvotes: 8, roadmapPhase: 'On Deck', sampleDetails: 'Create student groups for bulk operations', relatedBugs: [], relatedDev: [], relatedRoadmap: ['FEAT-005'] },
-                { id: 'ENH-003', feature: 'Print usernames', category: 'teacher-experience', timesRequested: 8, upvotes: 3, roadmapPhase: 'Idea Phase', sampleDetails: 'Ability to print student username list', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-004', feature: 'Math off for store', category: 'customization', timesRequested: 6, upvotes: 5, roadmapPhase: 'Idea Phase', sampleDetails: 'Option to disable math/calculations in store', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-005', feature: 'Teacher Shops for Student', category: 'ux-ui', timesRequested: 6, upvotes: 4, roadmapPhase: 'Idea Phase', sampleDetails: 'Allow teachers to make purchases on behalf of students', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-006', feature: 'Debit Cards', category: 'financial-literacy', timesRequested: 5, upvotes: 2, roadmapPhase: 'Idea Phase', sampleDetails: 'Prepaid debit cards for student transactions', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-007', feature: 'Custom Store Themes', category: 'customization', timesRequested: 4, upvotes: 3, roadmapPhase: 'Idea Phase', sampleDetails: 'Customizable themes for school stores', relatedBugs: ['BUG-011'], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-008', feature: 'Parent Portal Access', category: 'admin-school', timesRequested: 7, upvotes: 6, roadmapPhase: 'On Deck', sampleDetails: 'Parent accounts to view student activity', relatedBugs: [], relatedDev: ['DEV-006'], relatedRoadmap: ['FEAT-003'] },
-                { id: 'ENH-009', feature: 'Automated Savings Goals', category: 'financial-literacy', timesRequested: 3, upvotes: 2, roadmapPhase: 'Idea Phase', sampleDetails: 'Students set and track savings goals', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
-                { id: 'ENH-010', feature: 'Classroom Leaderboard', category: 'student-experience', timesRequested: 9, upvotes: 7, roadmapPhase: 'Completed', sampleDetails: 'Gamified leaderboard for classroom engagement', relatedBugs: [], relatedDev: ['DEV-007'], relatedRoadmap: ['FEAT-008'] }
+                { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', timesRequested: 20, upvotes: 12, roadmapPhase: 'In Development', slackThread: '', jamLink: '', sampleDetails: 'Mobile app for iOS and Android platforms', relatedBugs: ['BUG-007'], relatedDev: [], relatedRoadmap: ['FEAT-001'] },
+                { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', timesRequested: 13, upvotes: 8, roadmapPhase: 'On Deck', slackThread: '', jamLink: '', sampleDetails: 'Create student groups for bulk operations', relatedBugs: [], relatedDev: [], relatedRoadmap: ['FEAT-005'] },
+                { id: 'ENH-003', feature: 'Print usernames', category: 'teacher-experience', timesRequested: 8, upvotes: 3, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Ability to print student username list', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-004', feature: 'Math off for store', category: 'customization', timesRequested: 6, upvotes: 5, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Option to disable math/calculations in store', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-005', feature: 'Teacher Shops for Student', category: 'ux-ui', timesRequested: 6, upvotes: 4, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Allow teachers to make purchases on behalf of students', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-006', feature: 'Debit Cards', category: 'financial-literacy', timesRequested: 5, upvotes: 2, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Prepaid debit cards for student transactions', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-007', feature: 'Custom Store Themes', category: 'customization', timesRequested: 4, upvotes: 3, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Customizable themes for school stores', relatedBugs: ['BUG-011'], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-008', feature: 'Parent Portal Access', category: 'admin-school', timesRequested: 7, upvotes: 6, roadmapPhase: 'On Deck', slackThread: '', jamLink: '', sampleDetails: 'Parent accounts to view student activity', relatedBugs: [], relatedDev: ['DEV-006'], relatedRoadmap: ['FEAT-003'] },
+                { id: 'ENH-009', feature: 'Automated Savings Goals', category: 'financial-literacy', timesRequested: 3, upvotes: 2, roadmapPhase: 'Idea Phase', slackThread: '', jamLink: '', sampleDetails: 'Students set and track savings goals', relatedBugs: [], relatedDev: [], relatedRoadmap: [] },
+                { id: 'ENH-010', feature: 'Classroom Leaderboard', category: 'student-experience', timesRequested: 9, upvotes: 7, roadmapPhase: 'Completed', slackThread: '', jamLink: '', sampleDetails: 'Gamified leaderboard for classroom engagement', relatedBugs: [], relatedDev: ['DEV-007'], relatedRoadmap: ['FEAT-008'] }
             ];
 
             data.roadmap = [
@@ -1760,21 +1877,35 @@
             const tbody = document.getElementById('bugsTableBody');
             tbody.innerHTML = '';
             const searchTerm = document.getElementById('bugSearch').value.toLowerCase();
-            const typeFilter = document.getElementById('bugTypeFilter').value;
-            const priorityFilter = document.getElementById('bugPriorityFilter').value;
-            const statusFilter = document.getElementById('bugStatusFilter').value;
             let bugs = data.bugs;
-            if (typeFilter !== 'all') bugs = bugs.filter(b => b.type === typeFilter);
-            if (priorityFilter !== 'all') bugs = bugs.filter(b => b.priority === priorityFilter);
-            if (statusFilter !== 'all') bugs = bugs.filter(b => b.status === statusFilter);
+
+            // Apply active filters (multi-select tags)
+            if (Object.keys(activeFilters.bugs).length > 0) {
+                bugs = bugs.filter(bug => {
+                    for (let field in activeFilters.bugs) {
+                        const selectedValues = activeFilters.bugs[field];
+                        if (selectedValues.length === 0) continue;
+
+                        // Date fields need special handling
+                        if (field === 'dateOpened' || field === 'dateResolved') {
+                            const dateVal = bug[field];
+                            if (!matchDateFilter(dateVal, selectedValues[0], field)) return false;
+                        } else {
+                            if (!selectedValues.includes(bug[field])) return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+
             if (searchTerm) bugs = bugs.filter(b => b.title.toLowerCase().includes(searchTerm));
             if (bugs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No bugs found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--gray);">No bugs found</td></tr>';
                 return;
             }
             bugs.forEach(bug => {
                 const row = document.createElement('tr');
-                row.innerHTML = '<td class="editable" data-id="' + bug.id + '" data-field="title"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + bug.id + '</span>' + bug.title + '</td><td class="editable" data-id="' + bug.id + '" data-field="type"><span class="pill pill-' + bug.type + '">' + bug.type + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="priority"><span class="pill pill-' + bug.priority + '">' + bug.priority + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="status"><span class="pill pill-' + bug.status + '">' + bug.status + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="dateOpened">' + bug.dateOpened + '</td><td>' + (bug.slackThread ? '<a href="' + bug.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(bug) + '</td><td><button class="btn-icon" onclick="editBug(\'' + bug.id + '\')">✎</button><button class="btn-icon" onclick="deleteBug(\'' + bug.id + '\')" style="color:var(--red);">🗑</button></td>';
+                row.innerHTML = '<td class="editable" data-id="' + bug.id + '" data-field="title"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + bug.id + '</span>' + bug.title + '</td><td class="editable" data-id="' + bug.id + '" data-field="type"><span class="pill pill-' + bug.type + '">' + bug.type + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="priority"><span class="pill pill-' + bug.priority + '">' + bug.priority + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="status"><span class="pill pill-' + bug.status + '">' + bug.status + '</span></td><td class="editable" data-id="' + bug.id + '" data-field="dateOpened">' + bug.dateOpened + '</td><td class="editable" data-id="' + bug.id + '" data-field="dateResolved">' + bug.dateResolved + '</td><td>' + (bug.slackThread ? '<a href="' + bug.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td>' + (bug.jamLink ? '<a href="' + bug.jamLink + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(bug) + '</td><td><button class="btn-icon" onclick="editBug(\'' + bug.id + '\')">✎</button><button class="btn-icon" onclick="deleteBug(\'' + bug.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
             attachEditableListeners();
@@ -1784,19 +1915,29 @@
             const tbody = document.getElementById('devTableBody');
             tbody.innerHTML = '';
             const searchTerm = document.getElementById('devSearch').value.toLowerCase();
-            const priorityFilter = document.getElementById('devPriorityFilter').value;
-            const statusFilter = document.getElementById('devStatusFilter').value;
             let items = data.devQueue;
-            if (priorityFilter !== 'all') items = items.filter(d => d.priority === priorityFilter);
-            if (statusFilter !== 'all') items = items.filter(d => d.status === statusFilter);
+
+            // Apply active filters (multi-select tags)
+            if (Object.keys(activeFilters.dev).length > 0) {
+                items = items.filter(item => {
+                    for (let field in activeFilters.dev) {
+                        const selectedValues = activeFilters.dev[field];
+                        if (selectedValues.length > 0 && !selectedValues.includes(item[field])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+
             if (searchTerm) items = items.filter(d => d.item.toLowerCase().includes(searchTerm));
             if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No dev items found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray);">No dev items found</td></tr>';
                 return;
             }
             items.forEach(item => {
                 const row = document.createElement('tr');
-                row.innerHTML = '<td class="editable" data-id="' + item.id + '" data-field="item"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + item.id + '</span>' + item.item + '</td><td class="editable" data-id="' + item.id + '" data-field="priority"><span class="pill pill-' + item.priority + '">' + item.priority + '</span></td><td class="editable" data-id="' + item.id + '" data-field="status"><span class="pill pill-' + item.status + '">' + item.status + '</span></td><td class="editable" data-id="' + item.id + '" data-field="backendHrs">' + item.backendHrs + '</td><td class="editable" data-id="' + item.id + '" data-field="frontendHrs">' + item.frontendHrs + '</td><td>' + (item.slackThread ? '<a href="' + item.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(item) + '</td><td><button class="btn-icon" onclick="editDevItem(\'' + item.id + '\')">✎</button><button class="btn-icon" onclick="deleteDevItem(\'' + item.id + '\')" style="color:var(--red);">🗑</button></td>';
+                row.innerHTML = '<td class="editable" data-id="' + item.id + '" data-field="item"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + item.id + '</span>' + item.item + '</td><td class="editable" data-id="' + item.id + '" data-field="priority"><span class="pill pill-' + item.priority + '">' + item.priority + '</span></td><td class="editable" data-id="' + item.id + '" data-field="status"><span class="pill pill-' + item.status + '">' + item.status + '</span></td><td class="editable" data-id="' + item.id + '" data-field="backendHrs">' + item.backendHrs + '</td><td class="editable" data-id="' + item.id + '" data-field="frontendHrs">' + item.frontendHrs + '</td><td>' + (item.slackThread ? '<a href="' + item.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td>' + (item.jamLink ? '<a href="' + item.jamLink + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td style="font-size:11px;">' + renderRelatedPills(item) + '</td><td><button class="btn-icon" onclick="editDevItem(\'' + item.id + '\')">✎</button><button class="btn-icon" onclick="deleteDevItem(\'' + item.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
             attachEditableListeners();
@@ -1807,19 +1948,29 @@
             const tbody = document.getElementById('enhancementsTableBody');
             tbody.innerHTML = '';
             const searchTerm = document.getElementById('enhSearch').value.toLowerCase();
-            const categoryFilter = document.getElementById('enhCategoryFilter').value;
-            const phaseFilter = document.getElementById('enhPhaseFilter').value;
             let items = data.enhancements;
-            if (categoryFilter !== 'all') items = items.filter(e => e.category === categoryFilter);
-            if (phaseFilter !== 'all') items = items.filter(e => e.roadmapPhase === phaseFilter);
+
+            // Apply active filters (multi-select tags)
+            if (Object.keys(activeFilters.enh).length > 0) {
+                items = items.filter(item => {
+                    for (let field in activeFilters.enh) {
+                        const selectedValues = activeFilters.enh[field];
+                        if (selectedValues.length > 0 && !selectedValues.includes(item[field])) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+
             if (searchTerm) items = items.filter(e => e.feature.toLowerCase().includes(searchTerm));
             if (items.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray);">No enhancements found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;color:var(--gray);">No enhancements found</td></tr>';
                 return;
             }
             items.forEach(enh => {
                 const row = document.createElement('tr');
-                row.innerHTML = '<td class="editable" data-id="' + enh.id + '" data-field="feature"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + enh.id + '</span>' + enh.feature + '</td><td class="editable" data-id="' + enh.id + '" data-field="category"><span class="pill pill-' + enh.category + '">' + enh.category.replace(/-/g,' ') + '</span></td><td style="text-align:center;"><button class="btn-icon" onclick="upvoteEnhancement(\'' + enh.id + '\')" title="Upvote">👍</button><span style="font-weight:700;">' + enh.upvotes + '</span></td><td class="editable" data-id="' + enh.id + '" data-field="roadmapPhase"><span class="pill pill-' + (enh.roadmapPhase||'').toLowerCase().replace(/\s+/g,'-') + '">' + (enh.roadmapPhase || 'Idea Phase') + '</span></td><td><button class="btn btn-small" onclick="editEnhancement(\'' + enh.id + '\')">View</button></td><td style="font-size:11px;">' + renderRelatedPills(enh) + '</td><td><button class="btn-icon" onclick="editEnhancement(\'' + enh.id + '\')">✎</button><button class="btn-icon" onclick="deleteEnhancement(\'' + enh.id + '\')" style="color:var(--red);">🗑</button></td>';
+                row.innerHTML = '<td class="editable" data-id="' + enh.id + '" data-field="feature"><span style="color:#9ca3af;font-size:11px;margin-right:6px;">' + enh.id + '</span>' + enh.feature + '</td><td class="editable" data-id="' + enh.id + '" data-field="category"><span class="pill pill-' + enh.category + '">' + enh.category.replace(/-/g,' ') + '</span></td><td style="text-align:center;"><button class="btn-icon" onclick="upvoteEnhancement(\'' + enh.id + '\')" title="Upvote">👍</button><span style="font-weight:700;">' + enh.upvotes + '</span></td><td class="editable" data-id="' + enh.id + '" data-field="roadmapPhase"><span class="pill pill-' + (enh.roadmapPhase||'').toLowerCase().replace(/\s+/g,'-') + '">' + (enh.roadmapPhase || 'Idea Phase') + '</span></td><td>' + (enh.slackThread ? '<a href="' + enh.slackThread + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td>' + (enh.jamLink ? '<a href="' + enh.jamLink + '" target="_blank" style="color:var(--primary-blue);">🔗</a>' : '-') + '</td><td><button class="btn btn-small" onclick="editEnhancement(\'' + enh.id + '\')">View</button></td><td style="font-size:11px;">' + renderRelatedPills(enh) + '</td><td><button class="btn-icon" onclick="editEnhancement(\'' + enh.id + '\')">✎</button><button class="btn-icon" onclick="deleteEnhancement(\'' + enh.id + '\')" style="color:var(--red);">🗑</button></td>';
                 tbody.appendChild(row);
             });
             attachEditableListeners();
@@ -1897,13 +2048,12 @@
             `).join('');
 
             // Enhancement Sneak Peek
-            const topEnh = data.enhancements.sort((a, b) => b.timesRequested - a.timesRequested).slice(0, 5);
+            const topEnh = data.enhancements.filter(e => e.roadmapPhase !== 'Completed').sort((a, b) => b.upvotes - a.upvotes).slice(0, 5);
             const enhSneak = document.getElementById('enhancementSneakPeekBody');
-            enhSneak.innerHTML = topEnh.length === 0 ? '<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--gray);">No enhancements</td></tr>' : topEnh.map(e => `
+            enhSneak.innerHTML = topEnh.length === 0 ? '<tr><td colspan="3" style="text-align: center; padding: 20px; color: var(--gray);">No enhancements</td></tr>' : topEnh.map(e => `
                 <tr>
                     <td>${e.feature}</td>
                     <td><span class="pill pill-${e.category}">${e.category.replace('-', ' ')}</span></td>
-                    <td>${e.timesRequested}</td>
                     <td style="text-align: center; font-weight: 700;">${e.upvotes}</td>
                 </tr>
             `).join('');
@@ -2016,8 +2166,8 @@
                 if (field === 'type') options = ['bug', 'performance', 'enhancement'];
                 else if (field === 'priority' && type === 'bug') options = ['high', 'medium', 'low'];
                 else if (field === 'priority' && type === 'dev') options = ['p1', 'p2', 'p3'];
-                else if (field === 'status' && type === 'bug') options = ['review', 'momentum', 'progress', 'resolved'];
-                else if (field === 'status' && type === 'dev') options = ['not-started', 'progress', 'review', 'blocked', 'deployed'];
+                else if (field === 'status' && type === 'bug') options = ['review', 'momentum', 'progress', 'staging', 'resolved'];
+                else if (field === 'status' && type === 'dev') options = ['not-started', 'progress', 'review', 'staging', 'blocked', 'deployed'];
                 else if (field === 'category') options = ['ux-ui', 'financial-literacy', 'customization', 'student-experience', 'teacher-experience', 'admin-school', 'integrations'];
                 else if (field === 'roadmapPhase') options = ['In Development', 'On Deck', 'Idea Phase', 'Blocked', 'Completed'];
                 options.forEach(opt => {
@@ -2100,6 +2250,7 @@
             document.getElementById('bugDateOpened').value = bug.dateOpened;
             document.getElementById('bugDateResolved').value = bug.dateResolved;
             document.getElementById('bugSlackLink').value = bug.slackThread;
+            document.getElementById('bugJamLink').value = bug.jamLink || '';
             document.getElementById('bugDescription').value = bug.description || '';
             renderRelatedItems('bugRelatedItems', bug);
 
@@ -2118,7 +2269,12 @@
                     dateOpened: document.getElementById('bugDateOpened').value,
                     dateResolved: document.getElementById('bugDateResolved').value,
                     slackThread: document.getElementById('bugSlackLink').value,
-                    description: document.getElementById('bugDescription').value
+                    jamLink: document.getElementById('bugJamLink').value,
+                    description: document.getElementById('bugDescription').value,
+                    relatedBugs: [],
+                    relatedDev: [],
+                    relatedEnhancements: [],
+                    relatedRoadmap: []
                 });
             } else {
                 const bug = data.bugs.find(b => b.id === currentEditingId);
@@ -2130,6 +2286,7 @@
                     bug.dateOpened = document.getElementById('bugDateOpened').value;
                     bug.dateResolved = document.getElementById('bugDateResolved').value;
                     bug.slackThread = document.getElementById('bugSlackLink').value;
+                    bug.jamLink = document.getElementById('bugJamLink').value;
                     bug.description = document.getElementById('bugDescription').value;
                 }
             }
@@ -2165,6 +2322,7 @@
             document.getElementById('devBackendHrs').value = item.backendHrs;
             document.getElementById('devFrontendHrs').value = item.frontendHrs;
             document.getElementById('devSlackThread').value = item.slackThread;
+            document.getElementById('devJamLink').value = item.jamLink || '';
             document.getElementById('devDescription').value = item.description || '';
             renderRelatedItems('devRelatedItems', item);
 
@@ -2182,7 +2340,11 @@
                     backendHrs: parseInt(document.getElementById('devBackendHrs').value) || 0,
                     frontendHrs: parseInt(document.getElementById('devFrontendHrs').value) || 0,
                     slackThread: document.getElementById('devSlackThread').value,
-                    description: document.getElementById('devDescription').value
+                    jamLink: document.getElementById('devJamLink').value,
+                    description: document.getElementById('devDescription').value,
+                    relatedBugs: [],
+                    relatedEnhancements: [],
+                    relatedRoadmap: []
                 });
             } else {
                 const item = data.devQueue.find(d => d.id === currentEditingId);
@@ -2193,6 +2355,7 @@
                     item.backendHrs = parseInt(document.getElementById('devBackendHrs').value) || 0;
                     item.frontendHrs = parseInt(document.getElementById('devFrontendHrs').value) || 0;
                     item.slackThread = document.getElementById('devSlackThread').value;
+                    item.jamLink = document.getElementById('devJamLink').value;
                     item.description = document.getElementById('devDescription').value;
                 }
             }
@@ -2227,6 +2390,8 @@
             document.getElementById('enhTimesRequested').value = enh.timesRequested;
             document.getElementById('enhUpvotes').value = enh.upvotes;
             document.getElementById('enhRoadmapPhase').value = enh.roadmapPhase;
+            document.getElementById('enhSlackThread').value = enh.slackThread || '';
+            document.getElementById('enhJamLink').value = enh.jamLink || '';
             document.getElementById('enhSampleDetails').value = enh.sampleDetails || '';
             renderRelatedItems('enhRelatedItems', enh);
 
@@ -2243,7 +2408,12 @@
                     timesRequested: parseInt(document.getElementById('enhTimesRequested').value) || 0,
                     upvotes: parseInt(document.getElementById('enhUpvotes').value) || 0,
                     roadmapPhase: document.getElementById('enhRoadmapPhase').value,
-                    sampleDetails: document.getElementById('enhSampleDetails').value
+                    slackThread: document.getElementById('enhSlackThread').value,
+                    jamLink: document.getElementById('enhJamLink').value,
+                    sampleDetails: document.getElementById('enhSampleDetails').value,
+                    relatedBugs: [],
+                    relatedDev: [],
+                    relatedRoadmap: []
                 });
             } else {
                 const enh = data.enhancements.find(e => e.id === currentEditingId);
@@ -2253,6 +2423,8 @@
                     enh.timesRequested = parseInt(document.getElementById('enhTimesRequested').value) || 0;
                     enh.upvotes = parseInt(document.getElementById('enhUpvotes').value) || 0;
                     enh.roadmapPhase = document.getElementById('enhRoadmapPhase').value;
+                    enh.slackThread = document.getElementById('enhSlackThread').value;
+                    enh.jamLink = document.getElementById('enhJamLink').value;
                     enh.sampleDetails = document.getElementById('enhSampleDetails').value;
                 }
             }
@@ -2311,18 +2483,150 @@
         function setupSearchAndFilter() {
             // Bug search
             document.getElementById('bugSearch').addEventListener('input', function() { renderBugTable(); });
-            // Bug filter dropdowns
-            document.getElementById('bugTypeFilter').addEventListener('change', function() { renderBugTable(); });
-            document.getElementById('bugPriorityFilter').addEventListener('change', function() { renderBugTable(); });
-            document.getElementById('bugStatusFilter').addEventListener('change', function() { renderBugTable(); });
-            // Dev search + filters
+            // Bug filter dropdowns with tag system
+            document.getElementById('bugTypeFilter').addEventListener('change', function() { addFilterTag('bugs', 'type', this); });
+            document.getElementById('bugPriorityFilter').addEventListener('change', function() { addFilterTag('bugs', 'priority', this); });
+            document.getElementById('bugStatusFilter').addEventListener('change', function() { addFilterTag('bugs', 'status', this); });
+            document.getElementById('bugDateOpenedFilter').addEventListener('change', function() { addFilterTag('bugs', 'dateOpened', this); });
+            document.getElementById('bugDateResolvedFilter').addEventListener('change', function() { addFilterTag('bugs', 'dateResolved', this); });
+            // Dev search + filters with tag system
             document.getElementById('devSearch').addEventListener('input', function() { renderDevTable(); });
-            document.getElementById('devPriorityFilter').addEventListener('change', function() { renderDevTable(); });
-            document.getElementById('devStatusFilter').addEventListener('change', function() { renderDevTable(); });
-            // Enhancement search + filters
+            document.getElementById('devPriorityFilter').addEventListener('change', function() { addFilterTag('dev', 'priority', this); });
+            document.getElementById('devStatusFilter').addEventListener('change', function() { addFilterTag('dev', 'status', this); });
+            // Enhancement search + filters with tag system
             document.getElementById('enhSearch').addEventListener('input', function() { renderEnhancementsTable(); });
-            document.getElementById('enhCategoryFilter').addEventListener('change', function() { renderEnhancementsTable(); });
-            document.getElementById('enhPhaseFilter').addEventListener('change', function() { renderEnhancementsTable(); });
+            document.getElementById('enhCategoryFilter').addEventListener('change', function() { addFilterTag('enh', 'category', this); });
+            document.getElementById('enhPhaseFilter').addEventListener('change', function() { addFilterTag('enh', 'roadmapPhase', this); });
+        }
+
+        // Date filter helpers
+        let customDateRanges = { dateOpened: { from: '', to: '' }, dateResolved: { from: '', to: '' } };
+
+        function matchDateFilter(dateVal, filterValue, dateField) {
+            if (!filterValue || filterValue === 'all') return true;
+            if (!dateVal) return (filterValue === 'custom' || filterValue === 'this-month' || filterValue === 'last-month') ? false : true;
+            const d = new Date(dateVal);
+            if (isNaN(d.getTime())) return false;
+            const now = new Date();
+
+            if (filterValue === 'this-month') {
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            } else if (filterValue === 'last-month') {
+                const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                return d.getMonth() === lastMonth.getMonth() && d.getFullYear() === lastMonth.getFullYear();
+            } else if (filterValue === 'custom') {
+                const range = customDateRanges[dateField];
+                if (!range) return true;
+                if (range.from && d < new Date(range.from)) return false;
+                if (range.to && d > new Date(range.to + 'T23:59:59')) return false;
+                return true;
+            }
+            return true;
+        }
+
+        function applyCustomDateFilter(field) {
+            const from = document.getElementById('bug' + field.charAt(0).toUpperCase() + field.slice(1) + 'From').value;
+            const to = document.getElementById('bug' + field.charAt(0).toUpperCase() + field.slice(1) + 'To').value;
+            customDateRanges[field] = { from: from, to: to };
+
+            // Remove existing date filter tag for this field, then add custom
+            if (activeFilters.bugs[field]) {
+                delete activeFilters.bugs[field];
+            }
+            activeFilters.bugs[field] = ['custom'];
+
+            // Hide the custom input
+            document.getElementById('bug' + field.charAt(0).toUpperCase() + field.slice(1) + 'Custom').style.display = 'none';
+
+            renderFilterTags('bugs');
+            renderBugTable();
+        }
+
+        function cancelCustomDateFilter(field) {
+            document.getElementById('bug' + field.charAt(0).toUpperCase() + field.slice(1) + 'Custom').style.display = 'none';
+            document.getElementById('bug' + field.charAt(0).toUpperCase() + field.slice(1) + 'Filter').value = 'all';
+        }
+
+        function addFilterTag(section, field, selectElement) {
+            const value = selectElement.value;
+            if (value === 'all' || value === '') {
+                selectElement.value = 'all';
+                return;
+            }
+
+            // Date fields: handle custom range popup + single-select (replace previous)
+            if (field === 'dateOpened' || field === 'dateResolved') {
+                if (value === 'custom') {
+                    // Show the custom date range inputs
+                    const capField = field.charAt(0).toUpperCase() + field.slice(1);
+                    document.getElementById('bug' + capField + 'Custom').style.display = 'block';
+                    selectElement.value = 'all';
+                    return; // Don't add tag yet — wait for Apply
+                }
+                // Replace any existing date filter for this field (single-select)
+                activeFilters[section][field] = [value];
+            } else {
+                // Regular multi-select: add to array
+                if (!activeFilters[section][field]) {
+                    activeFilters[section][field] = [];
+                }
+                if (!activeFilters[section][field].includes(value)) {
+                    activeFilters[section][field].push(value);
+                }
+            }
+
+            // Reset select to 'all'
+            selectElement.value = 'all';
+
+            // Render tags and table
+            renderFilterTags(section);
+            if (section === 'bugs') renderBugTable();
+            else if (section === 'dev') renderDevTable();
+            else if (section === 'enh') renderEnhancementsTable();
+        }
+
+        function removeFilterTag(section, field, value) {
+            if (activeFilters[section][field]) {
+                activeFilters[section][field] = activeFilters[section][field].filter(v => v !== value);
+                if (activeFilters[section][field].length === 0) {
+                    delete activeFilters[section][field];
+                }
+            }
+            renderFilterTags(section);
+            if (section === 'bugs') renderBugTable();
+            else if (section === 'dev') renderDevTable();
+            else if (section === 'enh') renderEnhancementsTable();
+        }
+
+        function getFilterLabel(field, value) {
+            const labels = {
+                type: { bug: 'Bug', performance: 'Performance', 'roster-sync': 'Roster Sync', enhancement: 'Enhancement' },
+                priority: { high: 'High', medium: 'Medium', low: 'Low', p1: 'P1', p2: 'P2', p3: 'P3' },
+                status: { review: 'Review', momentum: 'Momentum', progress: 'Progress', resolved: 'Resolved', staging: 'Staging', 'on-hold': 'On Hold', 'not-started': 'Not Started', blocked: 'Blocked', deployed: 'Deployed' },
+                category: { 'ux-ui': 'UX/UI', 'financial-literacy': 'Financial Literacy', customization: 'Customization', 'student-experience': 'Student Experience', 'teacher-experience': 'Teacher Experience', 'admin-school': 'Admin/School', integrations: 'Integrations' },
+                roadmapPhase: { 'In Development': 'In Development', 'On Deck': 'On Deck', 'Idea Phase': 'Idea Phase', Blocked: 'Blocked', Completed: 'Completed' },
+                dateOpened: { 'this-month': 'This Month', 'last-month': 'Last Month', custom: customDateRanges.dateOpened.from ? (customDateRanges.dateOpened.from + ' to ' + (customDateRanges.dateOpened.to || 'now')) : 'Custom Range' },
+                dateResolved: { 'this-month': 'This Month', 'last-month': 'Last Month', custom: customDateRanges.dateResolved.from ? (customDateRanges.dateResolved.from + ' to ' + (customDateRanges.dateResolved.to || 'now')) : 'Custom Range' }
+            };
+            return (labels[field] && labels[field][value]) || value;
+        }
+
+        function renderFilterTags(section) {
+            const container = document.getElementById(section + 'FilterTags');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let field in activeFilters[section]) {
+                const values = activeFilters[section][field];
+                values.forEach(value => {
+                    const tag = document.createElement('div');
+                    tag.className = 'filter-tag';
+                    const label = getFilterLabel(field, value);
+                    const fieldLabel = field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1');
+                    tag.innerHTML = fieldLabel + ': ' + label + ' <span class="remove-tag" onclick="removeFilterTag(\'' + section + '\', \'' + field + '\', \'' + value + '\')">×</span>';
+                    container.appendChild(tag);
+                });
+            }
         }
 
         let activeDevFilter = null;
@@ -2512,6 +2816,7 @@
                 document.getElementById('bugDateOpened').value = new Date().toISOString().split('T')[0];
                 document.getElementById('bugDateResolved').value = '';
                 document.getElementById('bugSlackLink').value = '';
+                document.getElementById('bugJamLink').value = '';
                 document.getElementById('bugDescription').value = '';
                 openModal('bugDetailModal');
             });
@@ -2526,6 +2831,7 @@
                 document.getElementById('devBackendHrs').value = '';
                 document.getElementById('devFrontendHrs').value = '';
                 document.getElementById('devSlackThread').value = '';
+                document.getElementById('devJamLink').value = '';
                 document.getElementById('devDescription').value = '';
                 openModal('devDetailModal');
             });
@@ -2539,6 +2845,8 @@
                 document.getElementById('enhTimesRequested').value = '';
                 document.getElementById('enhUpvotes').value = '';
                 document.getElementById('enhRoadmapPhase').value = '';
+                document.getElementById('enhSlackThread').value = '';
+                document.getElementById('enhJamLink').value = '';
                 document.getElementById('enhSampleDetails').value = '';
                 openModal('enhDetailModal');
             });
@@ -2553,6 +2861,8 @@
                 document.getElementById('enhTimesRequested').value = '1';
                 document.getElementById('enhUpvotes').value = '0';
                 document.getElementById('enhRoadmapPhase').value = '';
+                document.getElementById('enhSlackThread').value = '';
+                document.getElementById('enhJamLink').value = '';
                 document.getElementById('enhSampleDetails').value = '';
                 openModal('enhDetailModal');
             });
@@ -2585,8 +2895,20 @@
             [data.bugs, data.devQueue, data.enhancements, data.roadmap].forEach(arr => {
                 (arr || []).forEach(item => { fields.forEach(f => { if (!item[f]) item[f] = []; }); });
             });
-            if (data.devQueue) data.devQueue.forEach(d => { if (d.rowNumber === undefined) d.rowNumber = 0; });
-            if (data.enhancements) data.enhancements.forEach(e => { if (!e.roadmapPhase) e.roadmapPhase = 'Idea Phase'; });
+            if (data.bugs) data.bugs.forEach(b => { if (!b.jamLink) b.jamLink = ''; });
+            if (data.devQueue) {
+                data.devQueue.forEach(d => {
+                    if (d.rowNumber === undefined) d.rowNumber = 0;
+                    if (!d.jamLink) d.jamLink = '';
+                });
+            }
+            if (data.enhancements) {
+                data.enhancements.forEach(e => {
+                    if (!e.roadmapPhase) e.roadmapPhase = 'Idea Phase';
+                    if (!e.jamLink) e.jamLink = '';
+                    if (!e.slackThread) e.slackThread = '';
+                });
+            }
         }
 
         // ============ GOOGLE SHEETS SYNC ============
@@ -2742,6 +3064,7 @@
                     id: r[0] || '', title: r[1] || '', type: (r[2] || 'bug').toLowerCase(),
                     priority: (r[3] || 'medium').toLowerCase(), status: (r[4] || 'review').toLowerCase(),
                     dateOpened: r[5] || '', dateResolved: r[6] || '', slackThread: r[7] || '',
+                    jamLink: '',
                     description: r[8] || '',
                     relatedBugs: parseRelatedIds(r[9]), relatedDev: parseRelatedIds(r[10]),
                     relatedEnhancements: parseRelatedIds(r[11]), relatedRoadmap: parseRelatedIds(r[12])
@@ -2764,7 +3087,8 @@
                     id: r[0] || '', item: r[1] || '', priority: (r[2] || 'p1').toLowerCase(),
                     status: (r[3] || 'not-started').toLowerCase(),
                     backendHrs: parseInt(r[4]) || 0, frontendHrs: parseInt(r[5]) || 0,
-                    rowNumber: parseInt(r[6]) || 0, description: r[7] || '',
+                    slackThread: r[6] || '', jamLink: '',
+                    description: r[7] || '',
                     relatedBugs: parseRelatedIds(r[8]), relatedEnhancements: parseRelatedIds(r[9]),
                     relatedRoadmap: parseRelatedIds(r[10])
                 });
@@ -2785,7 +3109,8 @@
                 items.push({
                     id: r[0] || '', feature: r[1] || '', category: (r[2] || 'ux-ui').toLowerCase(),
                     timesRequested: 0, upvotes: parseInt(r[3]) || 0,
-                    roadmapPhase: r[4] || 'Idea Phase', sampleDetails: r[5] || '',
+                    roadmapPhase: r[4] || 'Idea Phase', slackThread: '', jamLink: '',
+                    sampleDetails: r[5] || '',
                     relatedBugs: parseRelatedIds(r[6]), relatedDev: parseRelatedIds(r[7]),
                     relatedRoadmap: parseRelatedIds(r[8])
                 });
