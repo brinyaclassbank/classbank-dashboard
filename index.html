@@ -1538,6 +1538,12 @@
                     <input type="text" id="sheetsUrl" placeholder="Paste your published Google Sheets URL here" style="width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: 13px; margin-top: 6px;">
                     <div id="connectionStatus" style="font-size: 12px; margin-top: 8px; color: var(--gray);">Not connected</div>
                 </div>
+                <div class="modal-section">
+                    <h3>Two-Way Sync (Optional)</h3>
+                    <p style="font-size: 12px; color: var(--gray); margin-bottom: 8px;">To enable editing from the dashboard, deploy the Apps Script and paste the URL below.</p>
+                    <input type="text" id="scriptUrl" placeholder="Paste your Apps Script web app URL here" style="width: 100%; padding: 10px 14px; border: 1px solid var(--light-gray); border-radius: 6px; font-size: 13px; margin-top: 6px;">
+                    <div id="scriptStatus" style="font-size: 12px; margin-top: 8px; color: var(--gray);">Not configured</div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="modal-btn modal-btn-secondary" onclick="closeModal('setupModal')">Cancel</button>
@@ -1795,7 +1801,8 @@
             devQueue: [],
             enhancements: [],
             roadmap: [],
-            sheetUrl: ''
+            sheetUrl: '',
+            scriptUrl: ''
         };
 
         let currentEditingId = null;
@@ -1877,6 +1884,28 @@
                 data = JSON.parse(saved);
             } else {
                 initializeDemoData();
+            }
+        }
+
+        // ============ TWO-WAY SYNC ============
+        async function syncToSheet(action, sheetName, id, itemData) {
+            if (!data.scriptUrl) {
+                // No script URL configured — save locally only
+                return { success: false, reason: 'no-script' };
+            }
+            try {
+                const payload = JSON.stringify({ action, sheet: sheetName, id, data: itemData });
+                await fetch(data.scriptUrl, {
+                    method: 'POST',
+                    body: payload,
+                    headers: { 'Content-Type': 'text/plain' },
+                    redirect: 'follow'
+                });
+                return { success: true };
+            } catch (e) {
+                console.error('Sheet sync error:', e);
+                showToast('Could not sync to Google Sheets', 'error');
+                return { success: false, error: e.message };
             }
         }
 
@@ -2211,10 +2240,19 @@
                 const val = input.value;
                 item[field] = ['backendHrs','frontendHrs','timesRequested','upvotes'].includes(field) ? (parseInt(val)||0) : val;
                 saveData();
+
+                // Sync single field change to sheet
+                if (data.scriptUrl) {
+                    let sheetName = type === 'bug' ? 'Bugs' : type === 'dev' ? 'Dev Queue' : 'Enhancements';
+                    let syncData = {};
+                    syncData[field] = item[field];
+                    syncToSheet('update', sheetName, id, syncData);
+                }
+
                 if (type === 'bug') renderBugTable();
                 else if (type === 'dev') { renderDevTable(); updateDevSummary(); }
                 else if (type === 'enh') { renderEnhancementsTable(); if (field === 'roadmapPhase') renderRoadmapKanban(); }
-                showToast('Updated!', 'success');
+                showToast('Updated & synced!', 'success');
             }
 
             input.addEventListener('blur', doSave);
@@ -2275,8 +2313,9 @@
         }
 
         function saveBug() {
+            let newId = null;
             if (!currentEditingId) {
-                const newId = 'BUG-' + String(data.bugs.length + 1).padStart(3, '0');
+                newId = 'BUG-' + String(data.bugs.length + 1).padStart(3, '0');
                 data.bugs.push({
                     id: newId,
                     title: document.getElementById('bugTitle').value,
@@ -2309,17 +2348,41 @@
             }
 
             saveData();
+
+            // Sync to Google Sheet
+            if (data.scriptUrl) {
+                const bugId = newId || currentEditingId;
+                const bugData = data.bugs.find(b => b.id === bugId);
+                if (bugData) {
+                    syncToSheet(newId ? 'add' : 'update', 'Bugs', bugData.id, {
+                        title: bugData.title,
+                        type: bugData.type,
+                        priority: bugData.priority,
+                        status: bugData.status,
+                        dateOpened: bugData.dateOpened,
+                        dateResolved: bugData.dateResolved,
+                        slackThread: bugData.slackThread,
+                        jamLink: bugData.jamLink,
+                        source: bugData.source || '',
+                        description: bugData.description
+                    });
+                }
+            }
+
             renderBugTable();
             closeModal('bugDetailModal');
             currentEditingId = null;
             currentEditingType = null;
-            showToast('Bug saved!', 'success');
+            showToast(data.scriptUrl ? 'Bug saved & synced!' : 'Bug saved locally', 'success');
         }
 
         function deleteBug(id) {
             if (confirm('Delete this bug?')) {
                 data.bugs = data.bugs.filter(b => b.id !== id);
                 saveData();
+                if (data.scriptUrl) {
+                    syncToSheet('delete', 'Bugs', id, {});
+                }
                 renderBugTable();
                 showToast('Bug deleted', 'success');
             }
@@ -2347,8 +2410,9 @@
         }
 
         function saveDevItem() {
+            let newId = null;
             if (!currentEditingId) {
-                const newId = 'DEV-' + String(data.devQueue.length + 1).padStart(3, '0');
+                newId = 'DEV-' + String(data.devQueue.length + 1).padStart(3, '0');
                 data.devQueue.push({
                     id: newId,
                     item: document.getElementById('devItem').value,
@@ -2378,17 +2442,40 @@
             }
 
             saveData();
+
+            // Sync to Google Sheet
+            if (data.scriptUrl) {
+                const devId = newId || currentEditingId;
+                const devData = data.devQueue.find(d => d.id === devId);
+                if (devData) {
+                    syncToSheet(newId ? 'add' : 'update', 'Dev Queue', devData.id, {
+                        item: devData.item,
+                        priority: devData.priority,
+                        status: devData.status,
+                        backendHrs: devData.backendHrs,
+                        frontendHrs: devData.frontendHrs,
+                        description: devData.description,
+                        slackThread: devData.slackThread,
+                        jamLink: devData.jamLink,
+                        source: devData.source || ''
+                    });
+                }
+            }
+
             renderDevTable();
             closeModal('devDetailModal');
             currentEditingId = null;
             currentEditingType = null;
-            showToast('Dev item saved!', 'success');
+            showToast(data.scriptUrl ? 'Dev item saved & synced!' : 'Dev item saved locally', 'success');
         }
 
         function deleteDevItem(id) {
             if (confirm('Delete this dev item?')) {
                 data.devQueue = data.devQueue.filter(d => d.id !== id);
                 saveData();
+                if (data.scriptUrl) {
+                    syncToSheet('delete', 'Dev Queue', id, {});
+                }
                 renderDevTable();
                 showToast('Dev item deleted', 'success');
             }
@@ -2416,8 +2503,9 @@
         }
 
         function saveEnhancement() {
+            let newId = null;
             if (!currentEditingId) {
-                const newId = 'ENH-' + String(data.enhancements.length + 1).padStart(3, '0');
+                newId = 'ENH-' + String(data.enhancements.length + 1).padStart(3, '0');
                 data.enhancements.push({
                     id: newId,
                     feature: document.getElementById('enhFeature').value,
@@ -2447,17 +2535,37 @@
             }
 
             saveData();
+
+            // Sync to Google Sheet
+            if (data.scriptUrl) {
+                const enhId = newId || currentEditingId;
+                const enhData = data.enhancements.find(e => e.id === enhId);
+                if (enhData) {
+                    syncToSheet(newId ? 'add' : 'update', 'Enhancements', enhData.id, {
+                        feature: enhData.feature,
+                        category: enhData.category,
+                        upvotes: enhData.upvotes,
+                        roadmapPhase: enhData.roadmapPhase,
+                        details: enhData.sampleDetails,
+                        source: enhData.source || ''
+                    });
+                }
+            }
+
             renderEnhancementsTable();
             closeModal('enhDetailModal');
             currentEditingId = null;
             currentEditingType = null;
-            showToast('Enhancement saved!', 'success');
+            showToast(data.scriptUrl ? 'Enhancement saved & synced!' : 'Enhancement saved locally', 'success');
         }
 
         function deleteEnhancement(id) {
             if (confirm('Delete this enhancement?')) {
                 data.enhancements = data.enhancements.filter(e => e.id !== id);
                 saveData();
+                if (data.scriptUrl) {
+                    syncToSheet('delete', 'Enhancements', id, {});
+                }
                 renderEnhancementsTable();
                 showToast('Enhancement deleted', 'success');
             }
@@ -2889,6 +2997,9 @@
                 document.getElementById('sheetsUrl').value = data.sheetUrl || '';
                 document.getElementById('connectionStatus').textContent = data.sheetUrl ? 'URL saved' : 'Not connected';
                 document.getElementById('connectionStatus').style.color = data.sheetUrl ? '#10b981' : 'var(--gray)';
+                document.getElementById('scriptUrl').value = data.scriptUrl || '';
+                document.getElementById('scriptStatus').textContent = data.scriptUrl ? 'URL configured' : 'Not configured';
+                document.getElementById('scriptStatus').style.color = data.scriptUrl ? '#10b981' : 'var(--gray)';
                 openModal('setupModal');
             });
 
@@ -3187,7 +3298,9 @@
 
         async function saveAndSync() {
             const url = document.getElementById('sheetsUrl').value.trim();
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
             data.sheetUrl = url;
+            data.scriptUrl = scriptUrl;
             saveData();
             if (!url) { closeModal('setupModal'); showToast('Sheet URL cleared.', 'info'); updateSyncIndicator('none'); return; }
             updateSyncIndicator('syncing');
