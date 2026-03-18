@@ -2898,6 +2898,19 @@
                         let aVal = a.querySelector(`td[data-field="${sortField}"]`)?.textContent.trim() || '';
                         let bVal = b.querySelector(`td[data-field="${sortField}"]`)?.textContent.trim() || '';
 
+                        // For title/item fields, strip the ID prefix (e.g. "BUG-001 ")
+                        if (sortField === 'title' || sortField === 'item' || sortField === 'feature') {
+                            aVal = aVal.replace(/^(BUG|DEV|ENH|FEAT)-\d+\s*/i, '');
+                            bVal = bVal.replace(/^(BUG|DEV|ENH|FEAT)-\d+\s*/i, '');
+                        }
+
+                        // Date fields — parse as dates
+                        if (sortField === 'dateOpened' || sortField === 'dateResolved') {
+                            const aDate = aVal ? new Date(aVal).getTime() : 0;
+                            const bDate = bVal ? new Date(bVal).getTime() : 0;
+                            return isAsc ? bDate - aDate : aDate - bDate;
+                        }
+
                         // Try to parse as number
                         const aNum = parseFloat(aVal);
                         const bNum = parseFloat(bVal);
