@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassBank Feature Request Forum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fa;
+            color: #1a1a3e;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #4E74FF 0%, #5e85ff 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 8px rgba(78, 116, 255, 0.15);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-class {
+            color: white;
+        }
+
+        .logo-bank {
+            color: #F9AB12;
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .header-desc {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-top: 0.25rem;
+        }
+
+        .submit-btn-header {
+            background: #F9AB12;
+            color: #1a1a3e;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(249, 171, 18, 0.2);
+        }
+
+        .submit-btn-header:hover {
+            background: #f5a000;
+            box-shadow: 0 4px 12px rgba(249, 171, 18, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #1a1a3e;
+        }
+
+        select:hover {
+            border-color: #4E74FF;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        /* Features Grid */
+        .features-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e8ecf1;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .feature-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: flex-start;
+        }
+
+        .upvote-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            min-width: 50px;
+        }
+
+        .upvote-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f0f2f9;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+
+        .upvote-btn:hover {
+            background: #e8ecf1;
+            transform: scale(1.1);
+        }
+
+        .upvote-btn.voted {
+            background: #4E74FF;
+            color: white;
+        }
+
+        .vote-count {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a3e;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .feature-main {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a3e;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .feature-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-category {
+            background: #f0f2f9;
+            color: #4E74FF;
+        }
+
+        .badge-status {
+            font-weight: 600;
+            color: white;
+        }
+
+        .badge-idea {
+            background: #999;
+        }
+
+        .badge-ondeck {
+            background: #F9AB12;
+            color: #1a1a3e;
+        }
+
+        .badge-development {
+            background: #4E74FF;
+        }
+
+        .badge-completed {
+            background: #10b981;
+        }
+
+        .badge-pending {
+            background: #ef4444;
+            color: white;
+        }
+
+        .feature-description {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .feature-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f2f9;
+            margin-top: auto;
+        }
+
+        .comment-count {
+            font-size: 13px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .view-btn {
+            background: #4E74FF;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: #3e5ee8;
+            transform: translateY(-1px);
+        }
+
+        /* Expanded Card Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a3e;
+            flex: 1;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #1a1a3e;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-stats {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem;
+            background: #f5f7fa;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 14px;
+        }
+
+        .modal-stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a3e;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 1.5rem;
+            border-top: 1px solid #f0f2f9;
+            padding-top: 1.5rem;
+        }
+
+        .comments-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a3e;
+            margin-bottom: 1rem;
+        }
+
+        .comment {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid #4E74FF;
+        }
+
+        .comment-author {
+            font-weight: 600;
+            font-size: 13px;
+            color: #1a1a3e;
+            margin-bottom: 0.25rem;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-reply-count {
+            font-size: 12px;
+            color: #4E74FF;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .add-comment-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f5f7fa;
+            border-radius: 6px;
+        }
+
+        .add-comment-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a3e;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .add-comment-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .add-comment-textarea:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .comment-submit-btn {
+            background: #4E74FF;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .comment-submit-btn:hover {
+            background: #3e5ee8;
+            transform: translateY(-1px);
+        }
+
+        /* Submit Feature Modal */
+        .submit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .submit-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 2rem;
+        }
+
+        .submit-modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .submit-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a3e;
+        }
+
+        .submit-modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a3e;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #f0f2f9;
+            color: #1a1a3e;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #e8ecf1;
+        }
+
+        .btn-primary {
+            background: #4E74FF;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #3e5ee8;
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .settings-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 2rem;
+        }
+
+        .settings-modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f2f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .settings-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a3e;
+        }
+
+        .settings-modal-body {
+            padding: 1.5rem;
+        }
+
+        .settings-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a3e;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .settings-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e6f2;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .settings-input:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .settings-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .test-btn {
+            background: #f0f2f9;
+            color: #4E74FF;
+            border: 1px solid #4E74FF;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            background: #4E74FF;
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-top: 1px solid #e8ecf1;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .settings-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            color: #4E74FF;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .filter-group {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            .features-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .modal {
+                padding: 1rem;
+            }
+
+            .submit-modal {
+                padding: 1rem;
+            }
+
+            .settings-modal {
+                padding: 1rem;
+            }
+        }
+
+        .status-sync {
+            font-size: 11px;
+            color: #999;
+            margin-top: 0.5rem;
+        }
+
+        .sync-icon {
+            display: inline-block;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-class">Class</span><span class="logo-bank">Bank</span>
+                </div>
+                <div class="header-subtitle">Feature Request Forum</div>
+                <div class="header-desc">Help us build the features you need! Browse requests, upvote your favorites, and submit new ideas.</div>
+            </div>
+            <button class="submit-btn-header" onclick="openSubmitModal()">+ Submit Feature</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search features..." onkeyup="handleSearch()">
+            </div>
+            <div class="filter-group">
+                <select id="categoryFilter" onchange="handleFilter()">
+                    <option value="">All Categories</option>
+                    <option value="ux-ui">UX/UI</option>
+                    <option value="financial-literacy">Financial Literacy</option>
+                    <option value="customization">Customization</option>
+                    <option value="student-experience">Student Experience</option>
+                    <option value="teacher-experience">Teacher Experience</option>
+                    <option value="admin-school">Admin/School</option>
+                    <option value="integrations">Integrations</option>
+                </select>
+                <select id="statusFilter" onchange="handleFilter()">
+                    <option value="">All Status</option>
+                    <option value="idea">Idea Phase</option>
+                    <option value="ondeck">On Deck</option>
+                    <option value="development">In Development</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <select id="sortFilter" onchange="handleFilter()">
+                    <option value="votes">Most Voted</option>
+                    <option value="newest">Newest</option>
+                    <option value="alpha">A-Z</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-container" id="featuresContainer">
+            <!-- Populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-text">© 2025 ClassBank. All rights reserved.</div>
+            <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
+        </div>
+        <div class="status-sync" id="syncStatus">Last synced: Never</div>
+    </div>
+
+    <!-- Feature Details Modal -->
+    <div class="modal" id="featureModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle"></div>
+                <button class="modal-close" onclick="closeFeatureModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-badges" id="modalBadges"></div>
+                <div class="modal-description" id="modalDescription"></div>
+                <div class="modal-stats">
+                    <div class="modal-stat">
+                        <div class="modal-stat-label">Votes</div>
+                        <div class="modal-stat-value" id="modalVotes">0</div>
+                    </div>
+                    <div class="modal-stat">
+                        <div class="modal-stat-label">Comments</div>
+                        <div class="modal-stat-value" id="modalComments">0</div>
+                    </div>
+                </div>
+                <div class="comments-section">
+                    <div class="comments-title">💬 Comments</div>
+                    <div id="commentsList"></div>
+                    <div class="add-comment-section">
+                        <label class="add-comment-label">Add your comment</label>
+                        <textarea class="add-comment-textarea" id="commentInput" placeholder="Share your thoughts..."></textarea>
+                        <button class="comment-submit-btn" onclick="submitComment()">Submit Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Feature Modal -->
+    <div class="submit-modal" id="submitModal">
+        <div class="submit-modal-content">
+            <div class="submit-modal-header">
+                <div class="submit-modal-title">Submit New Feature</div>
+                <button class="modal-close" onclick="closeSubmitModal()">✕</button>
+            </div>
+            <div class="submit-modal-body">
+                <div class="form-group">
+                    <label class="form-label">Feature Title *</label>
+                    <input type="text" class="form-input" id="featureTitle" placeholder="E.g., Mobile app redesign">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="featureCategory">
+                        <option value="ux-ui">UX/UI</option>
+                        <option value="financial-literacy">Financial Literacy</option>
+                        <option value="customization">Customization</option>
+                        <option value="student-experience">Student Experience</option>
+                        <option value="teacher-experience">Teacher Experience</option>
+                        <option value="admin-school">Admin/School</option>
+                        <option value="integrations">Integrations</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="featureDescription" placeholder="Tell us more about this feature and why it matters..."></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button class="btn-secondary" onclick="closeSubmitModal()">Cancel</button>
+                    <button class="btn-primary" onclick="submitNewFeature()">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-modal-content">
+            <div class="settings-modal-header">
+                <div class="settings-modal-title">Settings</div>
+                <button class="modal-close" onclick="closeSettingsModal()">✕</button>
+            </div>
+            <div class="settings-modal-body">
+                <div class="settings-group">
+                    <label class="settings-label">Google Sheets URL</label>
+                    <input type="text" class="settings-input" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
+                    <div style="font-size: 12px; color: #999; margin-top: 0.5rem;">Paste the published CSV export URL from your Google Sheet</div>
+                </div>
+                <div class="settings-buttons">
+                    <button class="test-btn" onclick="testConnection()">Test Connection</button>
+                    <button class="btn-secondary" onclick="closeSettingsModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveSettings()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage"></div>
+
+    <script>
+        // ==========================================
+        // Data & State Management
+        // ==========================================
+
+        const STORAGE_KEY_VOTES = 'classbank_votes';
+        const STORAGE_KEY_COMMENTS = 'classbank_comments';
+        const STORAGE_KEY_PENDING = 'classbank_pending_features';
+        const STORAGE_KEY_SHEETS_URL = 'classbank_sheets_url';
+        const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+        let allFeatures = [];
+        let filteredFeatures = [];
+        let currentModal = null;
+
+        // Demo Data
+        const DEMO_FEATURES = [
+            {
+                id: 'feat_001',
+                title: 'Mobile App',
+                category: 'student-experience',
+                upvotes: 12,
+                status: 'development',
+                description: 'Build a native iOS and Android app for ClassBank so students can access their accounts on the go.',
+                comments: ['Great idea!', 'This would be so helpful for managing money during travel']
+            },
+            {
+                id: 'feat_002',
+                title: 'Group Students',
+                category: 'teacher-experience',
+                upvotes: 8,
+                status: 'ondeck',
+                description: 'Allow teachers to organize students into custom groups for classroom activities and assignments.',
+                comments: []
+            },
+            {
+                id: 'feat_003',
+                title: 'Print Usernames',
+                category: 'teacher-experience',
+                upvotes: 3,
+                status: 'idea',
+                description: 'Add an option to print a list of student usernames for the classroom.',
+                comments: []
+            },
+            {
+                id: 'feat_004',
+                title: 'Debit Cards',
+                category: 'financial-literacy',
+                upvotes: 2,
+                status: 'idea',
+                description: 'Issue physical debit cards connected to ClassBank accounts for real-world spending practice.',
+                comments: []
+            },
+            {
+                id: 'feat_005',
+                title: 'Parent Portal Access',
+                category: 'admin-school',
+                upvotes: 6,
+                status: 'ondeck',
+                description: 'Enable parents to view their child\'s account activity and set spending limits.',
+                comments: ['Definitely needed', 'Parents ask about this all the time']
+            },
+            {
+                id: 'feat_006',
+                title: 'Custom Store Themes',
+                category: 'customization',
+                upvotes: 3,
+                status: 'idea',
+                description: 'Allow schools to customize the appearance and branding of their ClassBank store.',
+                comments: []
+            },
+            {
+                id: 'feat_007',
+                title: 'Automated Savings Goals',
+                category: 'financial-literacy',
+                upvotes: 2,
+                status: 'idea',
+                description: 'Let students set automatic savings goals and track progress toward milestones.',
+                comments: []
+            },
+            {
+                id: 'feat_008',
+                title: 'Classroom Leaderboard',
+                category: 'student-experience',
+                upvotes: 7,
+                status: 'completed',
+                description: 'Display a leaderboard showing top savers or earners to encourage financial habits.',
+                comments: []
+            },
+            {
+                id: 'feat_009',
+                title: 'Teacher Shops for Student',
+                category: 'ux-ui',
+                upvotes: 4,
+                status: 'idea',
+                description: 'Allow teachers to manage store purchases on behalf of students.',
+                comments: []
+            },
+            {
+                id: 'feat_010',
+                title: 'Math Off for Store',
+                category: 'customization',
+                upvotes: 5,
+                status: 'completed',
+                description: 'Disable the math challenge feature in the store for certain classes.',
+                comments: []
+            }
+        ];
+
+        // ==========================================
+        // Initialization
+        // ==========================================
+
+        function initApp() {
+            loadSettings();
+            loadFeatures();
+            setupSearchAndFilter();
+            renderFeatures();
+            scheduleSyncronization();
+        }
+
+        function loadSettings() {
+            const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
+            if (url) {
+                document.getElementById('sheetsUrl').value = url;
+            }
+        }
+
+        function loadFeatures() {
+            const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
+            if (url) {
+                loadFromSheet(url);
+            } else {
+                allFeatures = [...DEMO_FEATURES];
+                updateSyncStatus('Using demo data (no sheet configured)');
+            }
+        }
+
+        function loadFromSheet(url) {
+            try {
+                // Parse the Google Sheets URL to get the CSV export URL
+                const csvUrl = parseSheetsUrl(url);
+
+                fetch(csvUrl)
+                    .then(response => response.text())
+                    .then(csv => {
+                        const features = parseEnhCSV(csv);
+                        if (features.length > 0) {
+                            allFeatures = features;
+                            updateSyncStatus('Synced successfully');
+                        } else {
+                            allFeatures = [...DEMO_FEATURES];
+                            updateSyncStatus('No features found, using demo data');
+                        }
+                        filteredFeatures = [...allFeatures];
+                        renderFeatures();
+                    })
+                    .catch(error => {
+                        console.error('Error loading sheet:', error);
+                        allFeatures = [...DEMO_FEATURES];
+                        updateSyncStatus('Error loading sheet, using demo data');
+                        filteredFeatures = [...allFeatures];
+                        renderFeatures();
+                    });
+            } catch (error) {
+                console.error('Error parsing sheet URL:', error);
+                allFeatures = [...DEMO_FEATURES];
+                updateSyncStatus('Error parsing sheet URL, using demo data');
+                filteredFeatures = [...allFeatures];
+                renderFeatures();
+            }
+        }
+
+        function parseSheetsUrl(url) {
+            // Handle both full URLs and partial IDs
+            const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+            if (match) {
+                const sheetId = match[1];
+                return `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+            }
+            return url;
+        }
+
+        function parseEnhCSV(csv) {
+            const lines = csv.trim().split('\n');
+            if (lines.length < 2) return [];
+
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const features = [];
+
+            const idIdx = headers.indexOf('id');
+            const featureIdx = headers.indexOf('feature');
+            const categoryIdx = headers.indexOf('category');
+            const upvotesIdx = headers.indexOf('upvotes');
+            const roadmapIdx = headers.indexOf('roadmap phase');
+            const detailsIdx = headers.indexOf('details / use cases');
+
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(',').map(c => c.trim());
+                if (cells.length < 2) continue;
+
+                const id = cells[idIdx] || `feat_${i}`;
+                const title = cells[featureIdx] || 'Untitled';
+                const category = cells[categoryIdx] || 'ux-ui';
+                const upvotes = parseInt(cells[upvotesIdx]) || 0;
+                const statusText = cells[roadmapIdx] || 'idea';
+                const description = cells[detailsIdx] || 'No description provided';
+
+                // Map roadmap phase to status
+                let status = 'idea';
+                if (statusText.toLowerCase().includes('on deck')) status = 'ondeck';
+                else if (statusText.toLowerCase().includes('in development')) status = 'development';
+                else if (statusText.toLowerCase().includes('completed')) status = 'completed';
+
+                features.push({
+                    id,
+                    title,
+                    category,
+                    upvotes,
+                    status,
+                    description,
+                    comments: []
+                });
+            }
+
+            return features;
+        }
+
+        function scheduleSyncronization() {
+            setInterval(() => {
+                const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
+                if (url) {
+                    loadFromSheet(url);
+                }
+            }, SYNC_INTERVAL);
+        }
+
+        function updateSyncStatus(message) {
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            document.getElementById('syncStatus').textContent = `${message} at ${time}`;
+        }
+
+        // ==========================================
+        // Filtering & Search
+        // ==========================================
+
+        function setupSearchAndFilter() {
+            // Event listeners are already in HTML
+        }
+
+        function handleSearch() {
+            handleFilter();
+        }
+
+        function handleFilter() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            // Combine sheet data with pending features
+            let featuresToFilter = [...allFeatures, ...getPendingFeatures()];
+
+            // Apply filters
+            filteredFeatures = featuresToFilter.filter(feature => {
+                const matchesSearch = feature.title.toLowerCase().includes(searchTerm) ||
+                                    feature.description.toLowerCase().includes(searchTerm);
+                const matchesCategory = !category || feature.category === category;
+                const matchesStatus = !status || feature.status === status;
+
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
+
+            // Apply sorting
+            if (sort === 'votes') {
+                filteredFeatures.sort((a, b) => getTotalVotes(b) - getTotalVotes(a));
+            } else if (sort === 'newest') {
+                filteredFeatures.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+            } else if (sort === 'alpha') {
+                filteredFeatures.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            renderFeatures();
+        }
+
+        // ==========================================
+        // Rendering
+        // ==========================================
+
+        function renderFeatures() {
+            const container = document.getElementById('featuresContainer');
+
+            if (filteredFeatures.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <div class="empty-state-text">No features found</div>
+                            <div style="font-size: 13px; color: #ccc; margin-top: 0.5rem;">Try adjusting your filters or search</div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredFeatures.map(feature => {
+                const totalVotes = getTotalVotes(feature);
+                const hasVoted = hasUserVoted(feature.id);
+                const commentCount = getComments(feature.id).length;
+                const statusBadge = getStatusBadge(feature.status);
+                const categoryLabel = getCategoryLabel(feature.category);
+
+                return `
+                    <div class="feature-card">
+                        <div class="feature-card-content">
+                            <div class="feature-header">
+                                <div class="upvote-section">
+                                    <button class="upvote-btn ${hasVoted ? 'voted' : ''}"
+                                            onclick="upvoteFeature('${feature.id}')">
+                                        ▲
+                                    </button>
+                                    <div class="vote-count">${totalVotes}</div>
+                                </div>
+                                <div class="feature-main">
+                                    <div class="feature-title">${escapeHtml(feature.title)}</div>
+                                    <div class="feature-badges">
+                                        <span class="badge badge-category">${categoryLabel}</span>
+                                        <span class="badge badge-status ${statusBadge.class}">${statusBadge.text}</span>
+                                        ${feature.isPending ? '<span class="badge badge-pending">Pending Review</span>' : ''}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="feature-description">${escapeHtml(feature.description)}</div>
+                        </div>
+                        <div class="feature-footer">
+                            <div class="comment-count">💬 ${commentCount}</div>
+                            <button class="view-btn" onclick="openFeatureModal('${feature.id}')">View & Comment</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'idea': { text: 'Idea Phase', class: 'badge-idea' },
+                'ondeck': { text: 'On Deck', class: 'badge-ondeck' },
+                'development': { text: 'In Development', class: 'badge-development' },
+                'completed': { text: 'Completed', class: 'badge-completed' }
+            };
+            return badges[status] || badges['idea'];
+        }
+
+        function getCategoryLabel(category) {
+            const labels = {
+                'ux-ui': 'UX/UI',
+                'financial-literacy': 'Financial Literacy',
+                'customization': 'Customization',
+                'student-experience': 'Student Experience',
+                'teacher-experience': 'Teacher Experience',
+                'admin-school': 'Admin/School',
+                'integrations': 'Integrations'
+            };
+            return labels[category] || category;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ==========================================
+        // Modal Management
+        // ==========================================
+
+        function openFeatureModal(featureId) {
+            const feature = findFeature(featureId);
+            if (!feature) return;
+
+            currentModal = featureId;
+            const totalVotes = getTotalVotes(feature);
+            const comments = getComments(featureId);
+            const statusBadge = getStatusBadge(feature.status);
+            const categoryLabel = getCategoryLabel(feature.category);
+
+            document.getElementById('modalTitle').textContent = escapeHtml(feature.title);
+
+            document.getElementById('modalBadges').innerHTML = `
+                <span class="badge badge-category">${categoryLabel}</span>
+                <span class="badge badge-status ${statusBadge.class}">${statusBadge.text}</span>
+                ${feature.isPending ? '<span class="badge badge-pending">Pending Review</span>' : ''}
+            `;
+
+            document.getElementById('modalDescription').textContent = feature.description;
+            document.getElementById('modalVotes').textContent = totalVotes;
+            document.getElementById('modalComments').textContent = comments.length;
+
+            const commentsList = document.getElementById('commentsList');
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<div style="color: #999; text-align: center; padding: 1rem;">No comments yet. Be the first to comment!</div>';
+            } else {
+                commentsList.innerHTML = comments.map((comment, idx) => `
+                    <div class="comment">
+                        <div class="comment-author">Anonymous User</div>
+                        <div class="comment-time">${formatTime(comment.timestamp)}</div>
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('commentInput').value = '';
+            document.getElementById('featureModal').classList.add('active');
+        }
+
+        function closeFeatureModal() {
+            document.getElementById('featureModal').classList.remove('active');
+            currentModal = null;
+        }
+
+        function openSubmitModal() {
+            document.getElementById('featureTitle').value = '';
+            document.getElementById('featureDescription').value = '';
+            document.getElementById('submitModal').classList.add('active');
+        }
+
+        function closeSubmitModal() {
+            document.getElementById('submitModal').classList.remove('active');
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('active');
+        }
+
+        // ==========================================
+        // Feature Actions
+        // ==========================================
+
+        function upvoteFeature(featureId) {
+            const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '{}');
+
+            if (votes[featureId]) {
+                delete votes[featureId];
+            } else {
+                votes[featureId] = true;
+            }
+
+            localStorage.setItem(STORAGE_KEY_VOTES, JSON.stringify(votes));
+            renderFeatures();
+
+            if (currentModal === featureId) {
+                openFeatureModal(featureId);
+            }
+        }
+
+        function getTotalVotes(feature) {
+            const localVotes = hasUserVoted(feature.id) ? 1 : 0;
+            return feature.upvotes + localVotes;
+        }
+
+        function hasUserVoted(featureId) {
+            const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '{}');
+            return !!votes[featureId];
+        }
+
+        // ==========================================
+        // Comments
+        // ==========================================
+
+        function addComment(featureId, text) {
+            const comments = JSON.parse(localStorage.getItem(STORAGE_KEY_COMMENTS) || '{}');
+
+            if (!comments[featureId]) {
+                comments[featureId] = [];
+            }
+
+            comments[featureId].push({
+                text,
+                timestamp: Date.now()
+            });
+
+            localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(comments));
+        }
+
+        function getComments(featureId) {
+            const comments = JSON.parse(localStorage.getItem(STORAGE_KEY_COMMENTS) || '{}');
+            return comments[featureId] || [];
+        }
+
+        function submitComment() {
+            const textarea = document.getElementById('commentInput');
+            const text = textarea.value.trim();
+
+            if (!text || !currentModal) return;
+
+            addComment(currentModal, text);
+            textarea.value = '';
+            openFeatureModal(currentModal);
+        }
+
+        function formatTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+
+            const date = new Date(timestamp);
+            return date.toLocaleDateString();
+        }
+
+        // ==========================================
+        // New Feature Submission
+        // ==========================================
+
+        function submitNewFeature() {
+            const title = document.getElementById('featureTitle').value.trim();
+            const category = document.getElementById('featureCategory').value;
+            const description = document.getElementById('featureDescription').value.trim();
+
+            if (!title) {
+                alert('Please enter a feature title');
+                return;
+            }
+
+            const feature = {
+                id: `pending_${Date.now()}`,
+                title,
+                category,
+                description,
+                upvotes: 0,
+                status: 'idea',
+                comments: [],
+                isPending: true,
+                isNew: true,
+                timestamp: Date.now()
+            };
+
+            const pending = JSON.parse(localStorage.getItem(STORAGE_KEY_PENDING) || '[]');
+            pending.push(feature);
+            localStorage.setItem(STORAGE_KEY_PENDING, JSON.stringify(pending));
+
+            closeSubmitModal();
+            showSuccessMessage('✓ Feature submitted successfully!');
+
+            // Reload features
+            loadFeatures();
+        }
+
+        function getPendingFeatures() {
+            const pending = JSON.parse(localStorage.getItem(STORAGE_KEY_PENDING) || '[]');
+            return pending;
+        }
+
+        // ==========================================
+        // Settings
+        // ==========================================
+
+        function testConnection() {
+            const url = document.getElementById('sheetsUrl').value.trim();
+            if (!url) {
+                alert('Please enter a Google Sheets URL');
+                return;
+            }
+
+            const csvUrl = parseSheetsUrl(url);
+
+            fetch(csvUrl)
+                .then(response => {
+                    if (response.ok) {
+                        showSuccessMessage('✓ Connection successful!');
+                    } else {
+                        alert('Failed to connect: ' + response.statusText);
+                    }
+                })
+                .catch(error => {
+                    alert('Failed to connect: ' + error.message);
+                });
+        }
+
+        function saveSettings() {
+            const url = document.getElementById('sheetsUrl').value.trim();
+            if (url) {
+                localStorage.setItem(STORAGE_KEY_SHEETS_URL, url);
+                closeSettingsModal();
+                showSuccessMessage('✓ Settings saved!');
+                loadFeatures();
+            } else {
+                alert('Please enter a valid Google Sheets URL');
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = message;
+            el.classList.add('show');
+
+            setTimeout(() => {
+                el.classList.remove('show');
+            }, 3000);
+        }
+
+        // ==========================================
+        // Helper Functions
+        // ==========================================
+
+        function findFeature(featureId) {
+            return allFeatures.find(f => f.id === featureId) ||
+                   getPendingFeatures().find(f => f.id === featureId);
+        }
+
+        // ==========================================
+        // Close modals on Escape key
+        // ==========================================
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeFeatureModal();
+                closeSubmitModal();
+                closeSettingsModal();
+            }
+        });
+
+        // ==========================================
+        // Close modals on background click
+        // ==========================================
+
+        document.getElementById('featureModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('featureModal')) {
+                closeFeatureModal();
+            }
+        });
+
+        document.getElementById('submitModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('submitModal')) {
+                closeSubmitModal();
+            }
+        });
+
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('settingsModal')) {
+                closeSettingsModal();
+            }
+        });
+
+        // ==========================================
+        // Start the app
+        // ==========================================
+
+        initApp();
+    </script>
+</body>
+</html>
