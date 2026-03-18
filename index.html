@@ -1260,7 +1260,7 @@
 
             <!-- Bug Sneak Peek -->
             <div class="card blue-border">
-                <h2>🐛 Bug Sneak Peek - High Priority</h2>
+                <h2>🐛 Bug Sneak Peek - Unresolved</h2>
                 <div class="table-container">
                     <table class="mini-table">
                         <thead>
@@ -2035,9 +2035,9 @@
             document.getElementById('resolvedBugs').textContent = resolved;
 
             // Bug Sneak Peek
-            const topBugs = data.bugs.filter(b => b.priority === 'high').slice(0, 5);
+            const topBugs = data.bugs.filter(b => b.status !== 'resolved').slice(0, 5);
             const bugSneak = document.getElementById('bugSneakPeekBody');
-            bugSneak.innerHTML = topBugs.length === 0 ? '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--gray);">No high-priority bugs</td></tr>' : topBugs.map(b => `
+            bugSneak.innerHTML = topBugs.length === 0 ? '<tr><td colspan="5" style="text-align: center; padding: 20px; color: var(--gray);">No unresolved bugs</td></tr>' : topBugs.map(b => `
                 <tr>
                     <td>${b.title}</td>
                     <td><span class="pill pill-${b.type}">${b.type}</span></td>
