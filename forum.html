@@ -1138,9 +1138,14 @@
             </div>
             <div class="settings-modal-body">
                 <div class="settings-group">
-                    <label class="settings-label">Google Sheets URL</label>
-                    <input type="text" class="settings-input" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/...">
-                    <div style="font-size: 12px; color: #999; margin-top: 0.5rem;">Paste the published CSV export URL from your Google Sheet</div>
+                    <label class="settings-label">Google Sheets URL (Published)</label>
+                    <input type="text" class="settings-input" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv">
+                    <div style="font-size: 12px; color: #999; margin-top: 0.5rem;">Paste the published Google Sheets URL (File → Share → Publish to web)</div>
+                </div>
+                <div class="settings-group" style="margin-top: 1.25rem;">
+                    <label class="settings-label">Apps Script URL (For Votes & Comments)</label>
+                    <input type="text" class="settings-input" id="scriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                    <div style="font-size: 12px; color: #999; margin-top: 0.5rem;">Required for upvotes and comments to sync across users. Deploy the Apps Script from your sheet and paste the web app URL here.</div>
                 </div>
                 <div class="settings-buttons">
                     <button class="test-btn" onclick="testConnection()">Test Connection</button>
@@ -1163,6 +1168,11 @@
         const STORAGE_KEY_COMMENTS = 'classbank_comments';
         const STORAGE_KEY_PENDING = 'classbank_pending_features';
         const STORAGE_KEY_SHEETS_URL = 'classbank_sheets_url';
+        const STORAGE_KEY_SCRIPT_URL = 'classbank_forum_script_url';
+
+        // Remote data fetched from Apps Script
+        let remoteVotes = {};       // { featureId: count }
+        let remoteComments = {};    // { featureId: [{timestamp, text}, ...] }
         const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
         let allFeatures = [];
@@ -1270,6 +1280,7 @@
         function initApp() {
             loadSettings();
             loadFeatures();
+            loadForumData();
             setupSearchAndFilter();
             renderFeatures();
             scheduleSyncronization();
@@ -1279,6 +1290,10 @@
             const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
             if (url) {
                 document.getElementById('sheetsUrl').value = url;
+            }
+            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            if (scriptUrl) {
+                document.getElementById('scriptUrl').value = scriptUrl;
             }
         }
 
@@ -1464,12 +1479,15 @@
         }
 
         function scheduleSyncronization() {
+            // Re-fetch features from Google Sheet every SYNC_INTERVAL
             setInterval(() => {
                 const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
                 if (url) {
                     loadFromSheet(url);
                 }
             }, SYNC_INTERVAL);
+            // Re-fetch votes and comments more frequently (every 60 seconds)
+            setInterval(loadForumData, 60 * 1000);
         }
 
         function updateSyncStatus(message) {
@@ -1757,6 +1775,8 @@
         }
 
         function openSettingsModal() {
+            document.getElementById('sheetsUrl').value = localStorage.getItem(STORAGE_KEY_SHEETS_URL) || '';
+            document.getElementById('scriptUrl').value = localStorage.getItem(STORAGE_KEY_SCRIPT_URL) || '';
             document.getElementById('settingsModal').classList.add('active');
         }
 
@@ -1768,26 +1788,50 @@
         // Feature Actions
         // ==========================================
 
-        function upvoteFeature(featureId) {
+        async function upvoteFeature(featureId) {
             const votes = JSON.parse(localStorage.getItem(STORAGE_KEY_VOTES) || '{}');
 
+            // Prevent double-voting per browser (toggle off if already voted)
             if (votes[featureId]) {
-                delete votes[featureId];
-            } else {
-                votes[featureId] = true;
+                // No un-vote via Apps Script (would need admin intervention)
+                // Just show a message
+                showSuccessMessage('You already upvoted this feature');
+                return;
             }
 
+            votes[featureId] = true;
             localStorage.setItem(STORAGE_KEY_VOTES, JSON.stringify(votes));
-            renderFeatures();
 
-            if (currentModal === featureId) {
-                openFeatureModal(featureId);
+            // Optimistically update UI
+            remoteVotes[featureId] = (remoteVotes[featureId] || 0) + 1;
+            renderFeatures();
+            if (currentModal === featureId) openFeatureModal(featureId);
+
+            // POST to Apps Script (fire and forget — no-cors means we can't read response)
+            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            if (scriptUrl) {
+                try {
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'vote', featureId: featureId })
+                    });
+                    showSuccessMessage('✓ Vote recorded!');
+                } catch (e) {
+                    console.error('Vote sync error:', e);
+                    showSuccessMessage('Vote saved locally only');
+                }
+            } else {
+                showSuccessMessage('Vote saved locally only (connect Apps Script to sync)');
             }
         }
 
         function getTotalVotes(feature) {
-            const localVotes = hasUserVoted(feature.id) ? 1 : 0;
-            return feature.upvotes + localVotes;
+            // Base count from Enhancements sheet + count from Forum Votes sheet
+            const baseVotes = feature.upvotes || 0;
+            const forumVotes = remoteVotes[feature.id] || 0;
+            return baseVotes + forumVotes;
         }
 
         function hasUserVoted(featureId) {
@@ -1799,24 +1843,75 @@
         // Comments
         // ==========================================
 
-        function addComment(featureId, text) {
-            const comments = JSON.parse(localStorage.getItem(STORAGE_KEY_COMMENTS) || '{}');
-
-            if (!comments[featureId]) {
-                comments[featureId] = [];
-            }
-
-            comments[featureId].push({
-                text,
-                timestamp: Date.now()
+        async function addComment(featureId, text) {
+            // Optimistic local update
+            if (!remoteComments[featureId]) remoteComments[featureId] = [];
+            remoteComments[featureId].push({
+                text: text,
+                timestamp: new Date().toISOString()
             });
 
-            localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(comments));
+            // Also cache locally so user sees their comment even if sync is slow
+            const localComments = JSON.parse(localStorage.getItem(STORAGE_KEY_COMMENTS) || '{}');
+            if (!localComments[featureId]) localComments[featureId] = [];
+            localComments[featureId].push({ text: text, timestamp: Date.now() });
+            localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(localComments));
+
+            // POST to Apps Script
+            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            if (scriptUrl) {
+                try {
+                    await fetch(scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({ action: 'comment', featureId: featureId, text: text })
+                    });
+                    showSuccessMessage('✓ Comment posted!');
+                } catch (e) {
+                    console.error('Comment sync error:', e);
+                    showSuccessMessage('Comment saved locally only');
+                }
+            } else {
+                showSuccessMessage('Comment saved locally only (connect Apps Script to sync)');
+            }
         }
 
         function getComments(featureId) {
+            // Prefer remote comments (from Apps Script). Fall back to local if not yet loaded.
+            if (remoteComments[featureId] && remoteComments[featureId].length) {
+                return remoteComments[featureId].map(c => ({
+                    text: c.text,
+                    timestamp: typeof c.timestamp === 'string' ? new Date(c.timestamp).getTime() : c.timestamp
+                }));
+            }
             const comments = JSON.parse(localStorage.getItem(STORAGE_KEY_COMMENTS) || '{}');
             return comments[featureId] || [];
+        }
+
+        // ==========================================
+        // Fetch remote votes & comments from Apps Script
+        // ==========================================
+
+        async function loadForumData() {
+            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            if (!scriptUrl) return;
+            try {
+                const resp = await fetch(scriptUrl + '?action=getForumData', {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                if (!resp.ok) return;
+                const data = await resp.json();
+                if (data.success) {
+                    remoteVotes = data.votes || {};
+                    remoteComments = data.comments || {};
+                    renderFeatures();
+                    if (currentModal) openFeatureModal(currentModal);
+                }
+            } catch (e) {
+                console.error('Error loading forum data:', e);
+            }
         }
 
         function submitComment() {
@@ -1924,14 +2019,23 @@
 
         function saveSettings() {
             const url = document.getElementById('sheetsUrl').value.trim();
+            const scriptUrl = document.getElementById('scriptUrl').value.trim();
             if (url) {
                 localStorage.setItem(STORAGE_KEY_SHEETS_URL, url);
-                closeSettingsModal();
-                showSuccessMessage('✓ Settings saved!');
-                loadFeatures();
-            } else {
-                alert('Please enter a valid Google Sheets URL');
             }
+            if (scriptUrl) {
+                localStorage.setItem(STORAGE_KEY_SCRIPT_URL, scriptUrl);
+            } else {
+                localStorage.removeItem(STORAGE_KEY_SCRIPT_URL);
+            }
+            if (!url && !scriptUrl) {
+                alert('Please enter at least a Google Sheets URL');
+                return;
+            }
+            closeSettingsModal();
+            showSuccessMessage('✓ Settings saved!');
+            loadFeatures();
+            loadForumData();
         }
 
         function showSuccessMessage(message) {
