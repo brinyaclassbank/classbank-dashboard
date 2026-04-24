@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassBank Enhancement & Roadmap Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            color: #1a1a3e;
+            line-height: 1.5;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #4E74FF 0%, #5a7fff 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .logo .class {
+            color: white;
+        }
+
+        .logo .bank {
+            color: #F9AB12;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .header-title .subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .nav-pills {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 2rem;
+        }
+
+        .nav-pill {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pill.active {
+            background: white;
+            color: #4E74FF;
+        }
+
+        .nav-pill:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-indicator.syncing {
+            background-color: #FDE440;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-white {
+            background: white;
+            color: #4E74FF;
+        }
+
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-icon {
+            background: none;
+            color: white;
+            padding: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .btn-icon:hover {
+            opacity: 0.8;
+        }
+
+        /* Internal Banner */
+        .internal-banner {
+            background-color: #fef3c7;
+            border-bottom: 1px solid #fcd34d;
+            padding: 0.75rem 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #92400e;
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Enhancements Tab */
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .filter-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-bar input::placeholder {
+            color: #999;
+        }
+
+        .filter-bar select {
+            min-width: 150px;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        /* Table */
+        .table-container {
+            overflow: auto;
+            max-height: calc(100vh - 300px);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            background: #4E74FF;
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #3d5acc;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .id-cell {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .pill-category {
+            background-color: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .pill-phase {
+            background-color: #e5e7eb;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .pill-idea {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .pill-on-deck {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .pill-in-dev {
+            background-color: #dbeafe;
+            color: #0c4a6e;
+        }
+
+        .pill-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .pill-blocked {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .upvotes {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4E74FF;
+        }
+
+        .comments-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .comments-badge:hover {
+            background-color: #e0e0e0;
+        }
+
+        .details-truncate {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            background-color: #4E74FF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #3d5acc;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a3e;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #1a1a3e;
+        }
+
+        .modal-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .vote-breakdown {
+            background-color: #f5f7fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .vote-breakdown-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .vote-breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .vote-breakdown-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .comments-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comment {
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            background-color: #f9fafb;
+            border-radius: 6px;
+            border-left: 3px solid #4E74FF;
+        }
+
+        .comment-text {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .comment-meta {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .no-comments {
+            padding: 1rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .modal-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #4E74FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-link:hover {
+            background-color: #3d5acc;
+        }
+
+        /* Kanban */
+        .kanban-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .kanban-column {
+            background-color: #f5f7fa;
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 400px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .kanban-column-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            color: #1a1a3e;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .kanban-column-count {
+            background-color: #4E74FF;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            min-width: 1.5rem;
+            text-align: center;
+        }
+
+        .kanban-card {
+            background: white;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            cursor: move;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4E74FF;
+            transition: all 0.2s ease;
+        }
+
+        .kanban-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .kanban-card.dragging {
+            opacity: 0.5;
+        }
+
+        .kanban-card-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: #1a1a3e;
+        }
+
+        .kanban-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            gap: 0.5rem;
+        }
+
+        .kanban-card-votes {
+            font-weight: 700;
+            color: #4E74FF;
+        }
+
+        .drop-zone {
+            min-height: 100px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #dbeafe;
+            border: 2px dashed #4E74FF;
+        }
+
+        /* Setup Modal */
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #1a1a3e;
+        }
+
+        .form-group input {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4E74FF;
+            box-shadow: 0 0 0 3px rgba(78, 116, 255, 0.1);
+        }
+
+        .form-status {
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .form-status.success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .form-status.error {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .form-status.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .btn-test {
+            background-color: #4E74FF;
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-test:hover {
+            background-color: #3d5acc;
+        }
+
+        /* Footer */
+        footer {
+            background-color: white;
+            border-top: 1px solid #eee;
+            padding: 1.5rem 2rem;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-link {
+            color: #4E74FF;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 0.9rem;
+            z-index: 2000;
+            animation: slideUp 0.3s ease;
+        }
+
+        .toast.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .toast.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-pills {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .table-container {
+                max-height: calc(100vh - 250px);
+            }
+
+            .kanban-container {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Internal Banner -->
+    <div class="internal-banner">
+        🔒 Internal Use Only — ClassBank Team
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="class">Class</span><span class="bank">Bank</span>
+                </div>
+                <div class="header-title">
+                    <h1>Enhancement & Roadmap Tracker</h1>
+                    <span class="subtitle">Internal Only</span>
+                </div>
+                <div class="nav-pills">
+                    <button class="nav-pill active" onclick="switchTab('enhancements')">Enhancements</button>
+                    <button class="nav-pill" onclick="switchTab('roadmap')">Roadmap</button>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-white" onclick="openForumTab()">Feedback Forum</button>
+                <button class="btn-icon" onclick="openSetupModal()" title="Setup">⚙️</button>
+                <div class="sync-indicator" id="syncIndicator"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Enhancements Tab -->
+        <div id="enhancements" class="content-section active">
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Search by name or ID...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                </select>
+                <select id="phaseFilter">
+                    <option value="">All Phases</option>
+                </select>
+                <select id="sortSelect">
+                    <option value="votes-desc">Most Voted</option>
+                    <option value="name-asc">A-Z</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="enhancementsTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 25%;">Feature</th>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 15%;">Phase</th>
+                            <th style="width: 10%;">Upvotes</th>
+                            <th style="width: 10%;">Comments</th>
+                            <th style="width: 10%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Roadmap Tab -->
+        <div id="roadmap" class="content-section">
+            <div id="kanbanContainer" class="kanban-container"></div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="modalTitle"></div>
+                    <div class="modal-meta">
+                        <div><span class="id-cell" id="modalId"></span></div>
+                        <div id="modalCategoryPill"></div>
+                        <div id="modalPhasePill"></div>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeDetailModal()">✕</button>
+            </div>
+
+            <div class="vote-breakdown">
+                <div class="vote-breakdown-title">VOTE SUMMARY</div>
+                <div class="vote-breakdown-row">
+                    <span>Sheet Upvotes</span>
+                    <strong id="sheetVotes">0</strong>
+                </div>
+                <div class="vote-breakdown-row">
+                    <span>Forum Votes</span>
+                    <strong id="forumVotes">0</strong>
+                </div>
+                <div class="vote-breakdown-row" style="border-top: 1px solid #ccc; padding-top: 0.5rem; margin-top: 0.5rem;">
+                    <span style="font-weight: 600;">Total</span>
+                    <strong id="totalVotes" style="font-size: 1.2rem; color: #4E74FF;">0</strong>
+                </div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Details</div>
+                <div class="modal-text" id="modalDetails"></div>
+            </div>
+
+            <div class="modal-section">
+                <div class="modal-section-title">Forum Comments (💬)</div>
+                <div class="comments-list" id="commentsList"></div>
+            </div>
+
+            <a id="forumLink" class="modal-link" target="_blank">View in Feedback Forum</a>
+        </div>
+    </div>
+
+    <!-- Setup Modal -->
+    <div id="setupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Setup Configuration</div>
+                <button class="modal-close" onclick="closeSetupModal()">✕</button>
+            </div>
+
+            <div class="modal-form">
+                <div class="form-group">
+                    <label>Google Sheets URL (Published CSV)</label>
+                    <input type="text" id="sheetsUrlInput" placeholder="https://docs.google.com/spreadsheets/d/...">
+                </div>
+
+                <div class="form-group">
+                    <label>Apps Script URL (Optional - for write-back)</label>
+                    <input type="text" id="scriptUrlInput" placeholder="https://script.google.com/macros/...">
+                </div>
+
+                <button class="btn-test" onclick="testConnection()">Test Connection</button>
+
+                <div id="setupStatus"></div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn-test" style="flex: 1; background-color: #10b981;" onclick="saveSetup()">Save</button>
+                    <button class="btn-test" style="flex: 1; background-color: #999;" onclick="closeSetupModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>Last synced: <span id="lastSyncTime">never</span></div>
+            <div>
+                <a href="./forum.html" class="footer-link" target="_blank">Public Feedback Forum</a> &nbsp;|&nbsp;
+                <a href="./index.html" class="footer-link" target="_blank">Main Dashboard</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===========================
+        // STATE & INITIALIZATION
+        // ===========================
+        let enhancements = [];
+        let forumVotes = {};
+        let forumComments = {};
+        let categories = new Set();
+        const phaseColors = {
+            'Idea Phase': 'pill-idea',
+            'On Deck': 'pill-on-deck',
+            'In Development': 'pill-in-dev',
+            'Completed': 'pill-completed',
+            'Blocked': 'pill-blocked'
+        };
+
+        // Load settings from localStorage
+        function loadSettings() {
+            return {
+                sheetsUrl: localStorage.getItem('classbank_roadmap_sheets_url') || '',
+                scriptUrl: localStorage.getItem('classbank_roadmap_script_url') || ''
+            };
+        }
+
+        function saveSettings(sheetsUrl, scriptUrl) {
+            localStorage.setItem('classbank_roadmap_sheets_url', sheetsUrl);
+            localStorage.setItem('classbank_roadmap_script_url', scriptUrl);
+        }
+
+        // Demo data
+        const demoEnhancements = [
+            { id: 'ENH-001', feature: 'Mobile App', category: 'student-experience', roadmapPhase: 'In Development', upvotes: 12, details: 'iOS and Android native apps for students' },
+            { id: 'ENH-002', feature: 'Group Students', category: 'teacher-experience', roadmapPhase: 'On Deck', upvotes: 8, details: 'Allow teachers to organize students into groups' },
+            { id: 'ENH-003', feature: 'Parent Portal Access', category: 'admin-school', roadmapPhase: 'On Deck', upvotes: 6, details: 'Portal for parents to view student balances' },
+            { id: 'ENH-004', feature: 'Custom Store Themes', category: 'customization', roadmapPhase: 'Idea Phase', upvotes: 3, details: 'Allow schools to customize store appearance' },
+            { id: 'ENH-005', feature: 'Debit Cards', category: 'financial-literacy', roadmapPhase: 'Idea Phase', upvotes: 2, details: 'Issue actual debit cards to students' },
+            { id: 'ENH-006', feature: 'Automated Savings Goals', category: 'financial-literacy', roadmapPhase: 'Idea Phase', upvotes: 2, details: 'Set automatic savings rules for each student' },
+            { id: 'ENH-007', feature: 'Classroom Leaderboard', category: 'student-experience', roadmapPhase: 'Completed', upvotes: 7, details: 'Leaderboard for top savers in classroom' },
+            { id: 'ENH-008', feature: 'Teacher Shops for Student', category: 'ux-ui', roadmapPhase: 'Idea Phase', upvotes: 4, details: 'Teachers can make purchases on behalf of students' },
+            { id: 'ENH-009', feature: 'Math Off for Store', category: 'customization', roadmapPhase: 'Completed', upvotes: 5, details: 'Remove math requirements from store transactions' },
+            { id: 'ENH-010', feature: 'Print Usernames', category: 'teacher-experience', roadmapPhase: 'Idea Phase', upvotes: 3, details: 'Print student usernames and passwords for distribution' }
+        ];
+
+        // Initialize demo data
+        function initializeDemo() {
+            enhancements = JSON.parse(JSON.stringify(demoEnhancements));
+            categories = new Set(enhancements.map(e => e.category));
+
+            // Demo forum data
+            forumVotes = {
+                'ENH-001': 5,
+                'ENH-002': 3,
+                'ENH-003': 2,
+                'ENH-004': 1,
+                'ENH-007': 4,
+                'ENH-009': 2
+            };
+
+            forumComments = {
+                'ENH-001': [
+                    { text: 'Our students really want this!', timestamp: '2026-04-20' },
+                    { text: 'Will this support offline mode?', timestamp: '2026-04-18' }
+                ],
+                'ENH-002': [
+                    { text: 'Essential for our workflow', timestamp: '2026-04-19' }
+                ],
+                'ENH-007': [
+                    { text: 'Love this feature!', timestamp: '2026-04-15' },
+                    { text: 'Can we customize the colors?', timestamp: '2026-04-14' },
+                    { text: 'Great gamification tool', timestamp: '2026-04-12' }
+                ]
+            };
+
+            updateLastSyncTime();
+        }
+
+        // ===========================
+        // UTILITY FUNCTIONS
+        // ===========================
+        function getBaseUrl(url) {
+            if (!url) return '';
+            const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+            if (match) {
+                return `https://docs.google.com/spreadsheets/d/${match[1]}/pub`;
+            }
+            return url;
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+            const headers = [];
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                const fields = [];
+                let current = '';
+                let inQuotes = false;
+
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    const nextChar = line[j + 1];
+
+                    if (char === '"') {
+                        if (inQuotes && nextChar === '"') {
+                            current += '"';
+                            j++;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        fields.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                fields.push(current.trim());
+
+                if (i === 0) {
+                    headers.push(...fields);
+                } else {
+                    const row = {};
+                    headers.forEach((h, idx) => {
+                        row[h] = fields[idx] || '';
+                    });
+                    result.push(row);
+                }
+            }
+            return result;
+        }
+
+        async function discoverSheets(baseUrl) {
+            const sheets = {};
+            const prefix = baseUrl.replace(/\/pub$/, '');
+
+            // Common GID values to try
+            const gids = [0, 1, 2, 3, 4, 5];
+
+            for (const gid of gids) {
+                try {
+                    const url = `${prefix}/export?format=csv&gid=${gid}`;
+                    const response = await fetch(url, { method: 'HEAD' });
+                    if (response.ok) {
+                        const csvUrl = `${prefix}/export?format=csv&gid=${gid}`;
+                        const csvResponse = await fetch(csvUrl);
+                        const text = await csvResponse.text();
+                        const rows = parseCSV(text);
+
+                        if (rows.length > 0) {
+                            const sheetType = identifySheet(rows);
+                            if (sheetType) {
+                                sheets[sheetType] = csvUrl;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Skip this GID
+                }
+            }
+
+            return sheets;
+        }
+
+        function identifySheet(rows) {
+            if (!rows || rows.length === 0) return null;
+
+            const firstRow = rows[0];
+            const headers = Object.keys(firstRow).map(h => h.toLowerCase());
+
+            if (headers.includes('feature') && headers.includes('category')) {
+                return 'Enhancements';
+            }
+            if (headers.includes('feature id') && headers.includes('timestamp') && !headers.includes('comment')) {
+                return 'Forum Votes';
+            }
+            if (headers.includes('feature id') && headers.includes('comment')) {
+                return 'Forum Comments';
+            }
+
+            return null;
+        }
+
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastSyncTime').textContent = timeStr;
+        }
+
+        // ===========================
+        // DATA LOADING
+        // ===========================
+        async function loadData() {
+            const settings = loadSettings();
+
+            if (!settings.sheetsUrl) {
+                initializeDemo();
+                renderEnhancements();
+                renderKanban();
+                return;
+            }
+
+            try {
+                setSyncIndicator(true);
+                const baseUrl = getBaseUrl(settings.sheetsUrl);
+                const sheets = await discoverSheets(baseUrl);
+
+                // Load enhancements
+                if (sheets.Enhancements) {
+                    const response = await fetch(sheets.Enhancements);
+                    const text = await response.text();
+                    const rows = parseCSV(text);
+                    enhancements = rows.map((row, idx) => ({
+                        id: row['ID'] || `ENH-${String(idx + 1).padStart(3, '0')}`,
+                        feature: row['Feature'] || '',
+                        category: row['Category'] || '',
+                        roadmapPhase: row['Roadmap Phase'] || 'Idea Phase',
+                        upvotes: parseInt(row['Upvotes']) || 0,
+                        details: row['Details'] || ''
+                    }));
+                    categories = new Set(enhancements.map(e => e.category).filter(Boolean));
+                }
+
+                // Load forum votes
+                if (sheets['Forum Votes']) {
+                    const response = await fetch(sheets['Forum Votes']);
+                    const text = await response.text();
+                    const rows = parseCSV(text);
+                    forumVotes = {};
+                    rows.forEach(row => {
+                        const featureId = row['Feature ID'] || row['Feature'];
+                        if (featureId) {
+                            forumVotes[featureId] = (forumVotes[featureId] || 0) + 1;
+                        }
+                    });
+                }
+
+                // Load forum comments
+                if (sheets['Forum Comments']) {
+                    const response = await fetch(sheets['Forum Comments']);
+                    const text = await response.text();
+                    const rows = parseCSV(text);
+                    forumComments = {};
+                    rows.forEach(row => {
+                        const featureId = row['Feature ID'] || row['Feature'];
+                        if (featureId) {
+                            if (!forumComments[featureId]) {
+                                forumComments[featureId] = [];
+                            }
+                            forumComments[featureId].push({
+                                text: row['Comment'] || '',
+                                timestamp: row['Timestamp'] || ''
+                            });
+                        }
+                    });
+                }
+
+                setSyncIndicator(false);
+                updateLastSyncTime();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                setSyncIndicator(false);
+                showToast('Error loading data. Using demo data.', 'error');
+                initializeDemo();
+            }
+
+            renderEnhancements();
+            renderKanban();
+        }
+
+        function setSyncIndicator(syncing) {
+            const indicator = document.getElementById('syncIndicator');
+            if (syncing) {
+                indicator.classList.add('syncing');
+            } else {
+                indicator.classList.remove('syncing');
+            }
+        }
+
+        // ===========================
+        // RENDERING
+        // ===========================
+        function renderEnhancements() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            let filtered = [...enhancements];
+
+            // Filter
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const phase = document.getElementById('phaseFilter').value;
+
+            filtered = filtered.filter(e => {
+                const matchSearch = !search || e.id.toLowerCase().includes(search) || e.feature.toLowerCase().includes(search);
+                const matchCategory = !category || e.category === category;
+                const matchPhase = !phase || e.roadmapPhase === phase;
+                return matchSearch && matchCategory && matchPhase;
+            });
+
+            // Sort
+            const sort = document.getElementById('sortSelect').value;
+            if (sort === 'votes-desc') {
+                filtered.sort((a, b) => getTotalVotes(b.id) - getTotalVotes(a.id));
+            } else if (sort === 'name-asc') {
+                filtered.sort((a, b) => a.feature.localeCompare(b.feature));
+            } else if (sort === 'newest') {
+                filtered.reverse();
+            }
+
+            // Render rows
+            filtered.forEach(e => {
+                const totalVotes = getTotalVotes(e.id);
+                const comments = forumComments[e.id] || [];
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="id-cell">${e.id}</td>
+                    <td>${e.feature}</td>
+                    <td><span class="pill pill-category">${e.category}</span></td>
+                    <td><span class="pill pill-phase ${phaseColors[e.roadmapPhase] || 'pill-idea'}">${e.roadmapPhase}</span></td>
+                    <td><span class="upvotes">${totalVotes}</span></td>
+                    <td><span class="comments-badge" onclick="showDetailModal('${e.id}')">💬 ${comments.length}</span></td>
+                    <td><button class="action-btn" onclick="showDetailModal('${e.id}')">View</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Update filter dropdowns
+            updateFilterDropdowns();
+        }
+
+        function updateFilterDropdowns() {
+            const categoryFilter = document.getElementById('categoryFilter');
+            const phaseFilter = document.getElementById('phaseFilter');
+            const currentCategory = categoryFilter.value;
+            const currentPhase = phaseFilter.value;
+
+            // Rebuild category filter
+            const categoryOptions = Array.from(categories).sort();
+            const existingCategories = Array.from(categoryFilter.querySelectorAll('option')).map(o => o.value).slice(1);
+            categoryOptions.forEach(cat => {
+                if (!existingCategories.includes(cat)) {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categoryFilter.appendChild(option);
+                }
+            });
+            categoryFilter.value = currentCategory;
+
+            // Rebuild phase filter
+            const phases = Array.from(new Set(enhancements.map(e => e.roadmapPhase))).sort();
+            const existingPhases = Array.from(phaseFilter.querySelectorAll('option')).map(o => o.value).slice(1);
+            phases.forEach(phase => {
+                if (!existingPhases.includes(phase)) {
+                    const option = document.createElement('option');
+                    option.value = phase;
+                    option.textContent = phase;
+                    phaseFilter.appendChild(option);
+                }
+            });
+            phaseFilter.value = currentPhase;
+        }
+
+        function renderKanban() {
+            const container = document.getElementById('kanbanContainer');
+            container.innerHTML = '';
+
+            const phases = ['In Development', 'On Deck', 'Idea Phase', 'Blocked', 'Completed'];
+
+            phases.forEach(phase => {
+                const column = document.createElement('div');
+                column.className = 'kanban-column';
+
+                const items = enhancements.filter(e => e.roadmapPhase === phase);
+                const title = document.createElement('div');
+                title.className = 'kanban-column-title';
+                title.innerHTML = `
+                    ${phase}
+                    <span class="kanban-column-count">${items.length}</span>
+                `;
+                column.appendChild(title);
+
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.dataset.phase = phase;
+                dropZone.ondragover = handleDragOver;
+                dropZone.ondrop = (e) => handleDrop(e, phase);
+                dropZone.ondragleave = handleDragLeave;
+
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'kanban-card';
+                    card.draggable = true;
+                    card.dataset.id = item.id;
+                    card.ondragstart = handleDragStart;
+                    card.ondragend = handleDragEnd;
+                    card.onclick = () => showDetailModal(item.id);
+
+                    const comments = forumComments[item.id] || [];
+                    const totalVotes = getTotalVotes(item.id);
+
+                    card.innerHTML = `
+                        <div class="kanban-card-title">${item.feature}</div>
+                        <div style="margin-bottom: 0.5rem;">
+                            <span class="pill pill-category" style="font-size: 0.75rem;">${item.category}</span>
+                        </div>
+                        <div class="kanban-card-meta">
+                            <span class="kanban-card-votes">👍 ${totalVotes}</span>
+                            <span style="color: #999;">💬 ${comments.length}</span>
+                        </div>
+                    `;
+                    dropZone.appendChild(card);
+                });
+
+                column.appendChild(dropZone);
+                container.appendChild(column);
+            });
+        }
+
+        // ===========================
+        // KANBAN DRAG-DROP
+        // ===========================
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+        }
+
+        function handleDragEnd(e) {
+            if (draggedElement) {
+                draggedElement.classList.remove('dragging');
+            }
+            document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            this.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (e.target === this) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        async function handleDrop(e, newPhase) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+
+            if (!draggedElement) return;
+
+            const id = draggedElement.dataset.id;
+            const enhancement = enhancements.find(e => e.id === id);
+            if (!enhancement) return;
+
+            const oldPhase = enhancement.roadmapPhase;
+            if (oldPhase === newPhase) return;
+
+            // Update local data
+            enhancement.roadmapPhase = newPhase;
+            renderKanban();
+
+            // Write back to Apps Script if configured
+            const settings = loadSettings();
+            if (settings.scriptUrl) {
+                try {
+                    const response = await fetch(settings.scriptUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'update',
+                            sheet: 'Enhancements',
+                            id: id,
+                            data: { roadmapPhase: newPhase }
+                        })
+                    });
+                    showToast(`Moved to ${newPhase}`, 'success');
+                } catch (error) {
+                    console.error('Error updating Apps Script:', error);
+                    showToast('Update saved locally. Apps Script sync failed.', 'error');
+                }
+            } else {
+                showToast(`Moved to ${newPhase} (local only)`, 'success');
+            }
+        }
+
+        // ===========================
+        // MODAL HANDLING
+        // ===========================
+        function showDetailModal(id) {
+            const enhancement = enhancements.find(e => e.id === id);
+            if (!enhancement) return;
+
+            const sheetVotes = enhancement.upvotes || 0;
+            const forumVotesCount = forumVotes[id] || 0;
+            const totalVotes = sheetVotes + forumVotesCount;
+            const comments = forumComments[id] || [];
+
+            document.getElementById('modalTitle').textContent = enhancement.feature;
+            document.getElementById('modalId').textContent = enhancement.id;
+            document.getElementById('modalCategoryPill').innerHTML = `<span class="pill pill-category">${enhancement.category}</span>`;
+            document.getElementById('modalPhasePill').innerHTML = `<span class="pill pill-phase ${phaseColors[enhancement.roadmapPhase]}">${enhancement.roadmapPhase}</span>`;
+
+            document.getElementById('sheetVotes').textContent = sheetVotes;
+            document.getElementById('forumVotes').textContent = forumVotesCount;
+            document.getElementById('totalVotes').textContent = totalVotes;
+
+            document.getElementById('modalDetails').textContent = enhancement.details || 'No details available.';
+
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '';
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<div class="no-comments">No comments yet on the forum.</div>';
+            } else {
+                comments.forEach(comment => {
+                    const div = document.createElement('div');
+                    div.className = 'comment';
+                    div.innerHTML = `
+                        <div class="comment-text">${comment.text}</div>
+                        <div class="comment-meta">${comment.timestamp}</div>
+                    `;
+                    commentsList.appendChild(div);
+                });
+            }
+
+            const forumLink = document.getElementById('forumLink');
+            forumLink.href = `./forum.html?feature=${encodeURIComponent(id)}`;
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function openSetupModal() {
+            const settings = loadSettings();
+            document.getElementById('sheetsUrlInput').value = settings.sheetsUrl;
+            document.getElementById('scriptUrlInput').value = settings.scriptUrl;
+            document.getElementById('setupStatus').innerHTML = '';
+            document.getElementById('setupModal').classList.add('active');
+        }
+
+        function closeSetupModal() {
+            document.getElementById('setupModal').classList.remove('active');
+        }
+
+        async function testConnection() {
+            const sheetsUrl = document.getElementById('sheetsUrlInput').value;
+            if (!sheetsUrl) {
+                showSetupStatus('Please enter a Sheets URL.', 'error');
+                return;
+            }
+
+            showSetupStatus('Testing connection...', 'pending');
+
+            try {
+                const baseUrl = getBaseUrl(sheetsUrl);
+                const sheets = await discoverSheets(baseUrl);
+
+                if (sheets.Enhancements) {
+                    const response = await fetch(sheets.Enhancements);
+                    const text = await response.text();
+                    const rows = parseCSV(text);
+                    const voteCount = rows.reduce((sum, r) => sum + (parseInt(r['Upvotes']) || 0), 0);
+                    const forumCommentCount = Object.values(forumComments).reduce((sum, arr) => sum + arr.length, 0);
+                    showSetupStatus(`Connected (${rows.length} enhancements, ${voteCount} votes, ${forumCommentCount} comments)`, 'success');
+                } else {
+                    showSetupStatus('No Enhancements sheet found.', 'error');
+                }
+            } catch (error) {
+                showSetupStatus('Connection failed: ' + error.message, 'error');
+            }
+        }
+
+        function showSetupStatus(message, type) {
+            const status = document.getElementById('setupStatus');
+            status.className = `form-status ${type}`;
+            status.textContent = message;
+        }
+
+        function saveSetup() {
+            const sheetsUrl = document.getElementById('sheetsUrlInput').value.trim();
+            const scriptUrl = document.getElementById('scriptUrlInput').value.trim();
+
+            if (!sheetsUrl) {
+                showSetupStatus('Sheets URL is required.', 'error');
+                return;
+            }
+
+            saveSettings(sheetsUrl, scriptUrl);
+            showToast('Settings saved. Reloading data...', 'success');
+            closeSetupModal();
+
+            setTimeout(() => {
+                loadData();
+            }, 500);
+        }
+
+        // ===========================
+        // UI HELPERS
+        // ===========================
+        function getTotalVotes(id) {
+            const e = enhancements.find(en => en.id === id);
+            return (e?.upvotes || 0) + (forumVotes[id] || 0);
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'roadmap') {
+                renderKanban();
+            }
+        }
+
+        function openForumTab() {
+            window.open('./forum.html', '_blank');
+        }
+
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // ===========================
+        // EVENT LISTENERS
+        // ===========================
+        document.getElementById('searchInput').addEventListener('input', renderEnhancements);
+        document.getElementById('categoryFilter').addEventListener('change', renderEnhancements);
+        document.getElementById('phaseFilter').addEventListener('change', renderEnhancements);
+        document.getElementById('sortSelect').addEventListener('change', renderEnhancements);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDetailModal();
+                closeSetupModal();
+            }
+        });
+
+        // ===========================
+        // INITIALIZATION
+        // ===========================
+        window.addEventListener('load', () => {
+            initializeDemo();
+            renderEnhancements();
+            renderKanban();
+
+            // Auto-sync every 5 minutes
+            setInterval(() => {
+                loadData();
+            }, 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>
