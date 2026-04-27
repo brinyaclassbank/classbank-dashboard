@@ -1802,8 +1802,10 @@
             votes[featureId] = true;
             localStorage.setItem(STORAGE_KEY_VOTES, JSON.stringify(votes));
 
-            // Optimistically update UI
-            remoteVotes[featureId] = (remoteVotes[featureId] || 0) + 1;
+            // Optimistically update UI by bumping the feature's upvotes directly
+            // (Apps Script will increment the cell on the sheet — next sync confirms)
+            const feature = allFeatures.find(f => f.id === featureId);
+            if (feature) feature.upvotes = (feature.upvotes || 0) + 1;
             renderFeatures();
             if (currentModal === featureId) openFeatureModal(featureId);
 
@@ -1828,10 +1830,9 @@
         }
 
         function getTotalVotes(feature) {
-            // Base count from Enhancements sheet + count from Forum Votes sheet
-            const baseVotes = feature.upvotes || 0;
-            const forumVotes = remoteVotes[feature.id] || 0;
-            return baseVotes + forumVotes;
+            // Apps Script increments the Enhancements.Upvotes column directly
+            // when a vote is recorded, so this is the single source of truth.
+            return feature.upvotes || 0;
         }
 
         function hasUserVoted(featureId) {
@@ -1990,14 +1991,34 @@
 
         async function testConnection() {
             const url = document.getElementById('sheetsUrl').value.trim();
+            const statusEl = document.getElementById('sheetsUrl');
             if (!url) {
                 alert('Please enter a Google Sheets URL');
                 return;
             }
+
+            // Detect edit URL and redirect user
+            if (url.includes('/edit') || (url.includes('/spreadsheets/d/') && !url.includes('/d/e/') && !url.includes('/pub'))) {
+                statusEl.style.borderColor = '#ef4444';
+                alert('❌ This looks like the EDIT URL (requires login).\n\nYou need the PUBLISHED URL instead:\n\n1. In Google Sheets, click File → Share → Publish to web\n2. Select "Entire Document" and "Comma-separated values (.csv)"\n3. Click Publish\n4. Copy the URL that starts with: https://docs.google.com/spreadsheets/d/e/2PACX-.../pub\n\nPaste that URL here.');
+                return;
+            }
+
             try {
-                const statusEl = document.getElementById('sheetsUrl');
                 statusEl.style.borderColor = '#fbbf24';
                 const baseUrl = getBaseUrl(url);
+
+                // Test if the base URL is reachable
+                let testResp;
+                try {
+                    testResp = await fetch(baseUrl.replace('/pub', '/pubhtml'));
+                } catch (e) {
+                    throw new Error('Could not reach the sheet. Check the URL is correct and the sheet is published.');
+                }
+                if (!testResp.ok) {
+                    throw new Error('Got HTTP ' + testResp.status + ' from the sheet. Make sure it is published to web.');
+                }
+
                 const gidMap = await discoverSheets(baseUrl);
                 if (gidMap['Enhancements']) {
                     const csvUrl = baseUrl + '?gid=' + gidMap['Enhancements'] + '&single=true&output=csv';
@@ -2009,11 +2030,11 @@
                     showSuccessMessage('✓ Connected! Found ' + features.length + ' enhancements');
                 } else {
                     statusEl.style.borderColor = '#ef4444';
-                    alert('Could not find the Enhancements sheet. Make sure your Google Sheet has a tab with columns: Feature, Category, Upvotes, Roadmap Phase');
+                    alert('⚠️ Connected to the sheet, but could not find an Enhancements tab.\n\nMake sure your Google Sheet has a tab with these column headers in row 1:\n  Feature, Category, Upvotes, Roadmap Phase\n\nThe tab name should be "Enhancements".');
                 }
             } catch (error) {
-                document.getElementById('sheetsUrl').style.borderColor = '#ef4444';
-                alert('Connection failed: ' + error.message);
+                statusEl.style.borderColor = '#ef4444';
+                alert('Connection failed: ' + error.message + '\n\nTip: The URL should start with https://docs.google.com/spreadsheets/d/e/2PACX-.../pub (not /edit)');
             }
         }
 
