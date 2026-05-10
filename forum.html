@@ -1055,7 +1055,7 @@
     <div class="footer">
         <div class="footer-content">
             <div class="footer-text">© 2025 ClassBank. All rights reserved.</div>
-            <button class="settings-btn" onclick="openSettingsModal()" title="Settings">⚙️</button>
+            <button class="settings-btn" onclick="openSettingsModal()" title="Admin Settings" id="settingsBtn" style="display: none;">⚙️</button>
         </div>
         <div class="status-sync" id="syncStatus">Last synced: Never</div>
     </div>
@@ -1161,6 +1161,19 @@
 
     <script>
         // ==========================================
+        // ⚙️  FORUM CONFIG — Edit these two URLs before deploying
+        // ==========================================
+        // These are the defaults every visitor will use automatically.
+        // No setup required for end users — they just see the live forum.
+        // To update: edit the values below, then commit forum.html to GitHub.
+        const FORUM_CONFIG = {
+            // Your published Google Sheets URL (File → Share → Publish to web → CSV)
+            sheetsUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR2zp3tYwwN5sFmfsjmPQqduTPX7COdWsqMzeF-fvUCrit3CxPd-ATIWkF-NNMKbZ5NQRUdMcXZgX5u/pub?output=csv',
+            // Your Apps Script web app URL (Deploy → New deployment → Web app)
+            scriptUrl: 'PASTE_YOUR_APPS_SCRIPT_URL_HERE'
+        };
+
+        // ==========================================
         // Data & State Management
         // ==========================================
 
@@ -1169,6 +1182,17 @@
         const STORAGE_KEY_PENDING = 'classbank_pending_features';
         const STORAGE_KEY_SHEETS_URL = 'classbank_sheets_url';
         const STORAGE_KEY_SCRIPT_URL = 'classbank_forum_script_url';
+
+        // Helper to get effective URL — admin override (localStorage) wins, else CONFIG default
+        function getSheetsUrl() {
+            return localStorage.getItem(STORAGE_KEY_SHEETS_URL) || FORUM_CONFIG.sheetsUrl || '';
+        }
+        function getScriptUrl() {
+            const stored = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            if (stored) return stored;
+            const baked = FORUM_CONFIG.scriptUrl;
+            return (baked && baked !== 'PASTE_YOUR_APPS_SCRIPT_URL_HERE') ? baked : '';
+        }
 
         // Remote data fetched from Apps Script
         let remoteVotes = {};       // { featureId: count }
@@ -1278,6 +1302,11 @@
         // ==========================================
 
         function initApp() {
+            // Show admin settings gear only when ?admin=true is in the URL
+            if (new URLSearchParams(window.location.search).has('admin')) {
+                const btn = document.getElementById('settingsBtn');
+                if (btn) btn.style.display = 'inline-block';
+            }
             loadSettings();
             loadFeatures();
             loadForumData();
@@ -1291,14 +1320,14 @@
             if (url) {
                 document.getElementById('sheetsUrl').value = url;
             }
-            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            const scriptUrl = getScriptUrl();
             if (scriptUrl) {
                 document.getElementById('scriptUrl').value = scriptUrl;
             }
         }
 
         function loadFeatures() {
-            const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
+            const url = getSheetsUrl();
             if (url) {
                 loadFromSheet(url);
             } else {
@@ -1481,10 +1510,8 @@
         function scheduleSyncronization() {
             // Re-fetch features from Google Sheet every SYNC_INTERVAL
             setInterval(() => {
-                const url = localStorage.getItem(STORAGE_KEY_SHEETS_URL);
-                if (url) {
-                    loadFromSheet(url);
-                }
+                const url = getSheetsUrl();
+                if (url) loadFromSheet(url);
             }, SYNC_INTERVAL);
             // Re-fetch votes and comments more frequently (every 60 seconds)
             setInterval(loadForumData, 60 * 1000);
@@ -1810,7 +1837,7 @@
             if (currentModal === featureId) openFeatureModal(featureId);
 
             // POST to Apps Script (fire and forget — no-cors means we can't read response)
-            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            const scriptUrl = getScriptUrl();
             if (scriptUrl) {
                 try {
                     await fetch(scriptUrl, {
@@ -1859,7 +1886,7 @@
             localStorage.setItem(STORAGE_KEY_COMMENTS, JSON.stringify(localComments));
 
             // POST to Apps Script
-            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            const scriptUrl = getScriptUrl();
             if (scriptUrl) {
                 try {
                     await fetch(scriptUrl, {
@@ -1895,7 +1922,7 @@
         // ==========================================
 
         async function loadForumData() {
-            const scriptUrl = localStorage.getItem(STORAGE_KEY_SCRIPT_URL);
+            const scriptUrl = getScriptUrl();
             if (!scriptUrl) return;
             try {
                 const resp = await fetch(scriptUrl + '?action=getForumData', {
